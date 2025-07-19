@@ -13,14 +13,25 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // In a real application, you would send these credentials to your backend for authentication.
-    // For this example, we'll use a simple hardcoded check.
-    if (username === 'testuser' && password === 'password') {
-      // Simulate successful login
-      localStorage.setItem('isLoggedIn', 'true');
-      router.push('/'); // Redirect to home page on successful login
-    } else {
-      setError('Invalid username or password.');
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        router.push('/'); // Redirect to home page on successful login
+      } else {
+        setError(data.message || 'Login failed.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('An unexpected error occurred. Please try again.');
     }
   };
 
