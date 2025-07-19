@@ -22,7 +22,7 @@ export default function RootLayout({
           <div className="container mx-auto flex justify-between">
             <Link href="/" className="text-white font-bold">CRM</Link>
             <div>
-              <Link href="/" className="text-gray-300 hover:text-white mr-4">Contacts</Link>
+              <Link href="/contacts" className="text-gray-300 hover:text-white mr-4">Contacts</Link>
               <Link href="/leads" className="text-gray-300 hover:text-white mr-4">Leads</Link>
               <Link href="/deals" className="text-gray-300 hover:text-white mr-4">Deals</Link>
               <Link href="/marketing" className="text-gray-300 hover:text-white mr-4">Marketing</Link>
@@ -33,7 +33,8 @@ export default function RootLayout({
               <Link href="/ai-ml" className="text-gray-300 hover:text-white mr-4">AI & ML</Link>
               <Link href="/quotes-proposals" className="text-gray-300 hover:text-white mr-4">Quotes & Proposals</Link>
               <Link href="/territory-team" className="text-gray-300 hover:text-white mr-4">Territory & Team</Link>
-              <Link href="/data-management" className="text-gray-300 hover:text-white">Data Management</Link>
+              <Link href="/data-management" className="text-gray-300 hover:text-white mr-4">Data Management</Link>
+              <Link href="/analytics-reporting" className="text-gray-300 hover:text-white">Analytics & Reporting</Link>
             </div>
           </div>
         </nav>
