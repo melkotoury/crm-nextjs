@@ -30,5 +30,11 @@
   "update_contact": "Aggiorna contatto",
   "cancel_edit": "Annulla modifica",
   "existing_contacts": "Contatti esistenti",
-  "no_contacts_found": "Nessun contatto trovato."
+  "no_contacts_found": "Nessun contatto trovato.",
+  "dashboard": "Cruscotto",
+  "total_contacts": "Contatti totali",
+  "total_leads": "Lead totali",
+  "total_deals": "Affari totali",
+  "deals_by_stage": "Affari per fase",
+  "leads_by_status": "Lead per stato"
 }

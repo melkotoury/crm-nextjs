@@ -30,5 +30,11 @@
   "update_contact": "Mettre à jour le contact",
   "cancel_edit": "Annuler la modification",
   "existing_contacts": "Contacts existants",
-  "no_contacts_found": "Aucun contact trouvé."
+  "no_contacts_found": "Aucun contact trouvé.",
+  "dashboard": "Tableau de bord",
+  "total_contacts": "Total des contacts",
+  "total_leads": "Total des prospects",
+  "total_deals": "Total des affaires",
+  "deals_by_stage": "Affaires par étape",
+  "leads_by_status": "Prospects par statut"
 }

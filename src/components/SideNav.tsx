@@ -15,6 +15,11 @@ export default function SideNav() {
       <LanguageSwitcher />
       <ul className="space-y-2">
         <li>
+          <Link href="/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700">
+            {t('dashboard')}
+          </Link>
+        </li>
+        <li>
           <Link href="/contacts" className="block py-2 px-4 rounded hover:bg-gray-700">
             {t('contacts')}
           </Link>

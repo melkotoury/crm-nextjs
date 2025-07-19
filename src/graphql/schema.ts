@@ -10,7 +10,7 @@ import { knowledgeBaseArticleResolvers } from './resolvers/knowledgeBaseArticle'
 import { reportResolvers } from './resolvers/report';
 import { dashboardResolvers } from './resolvers/dashboard';
 import { workflowResolvers } from './resolvers/workflow';
-import { workflowStepResolvers } from './resolvers/workflowStep';
+import { workflowStepResolvers }m from './resolvers/workflowStep';
 import { callResolvers } from './resolvers/call';
 import { meetingResolvers } from './resolvers/meeting';
 import { integrationResolvers } from './resolvers/integration';
@@ -35,7 +35,7 @@ import { marketTrendResolvers } from './resolvers/marketTrend';
 import { dataImportResolvers } from './resolvers/dataImport';
 import { dataExportResolvers } from './resolvers/dataExport';
 import { userResolvers } from './resolvers/user';
-
+import { analyticsResolvers } from './resolvers/analytics';
 
 export const typeDefs = gql`
   type Contact {
@@ -326,6 +326,16 @@ export const typeDefs = gql`
     role: String
   }
 
+  type DealsByStage {
+    stage: String!
+    count: Int!
+  }
+
+  type LeadsByStatus {
+    status: String!
+    count: Int!
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -400,6 +410,11 @@ export const typeDefs = gql`
     dataExport(export_id: ID!): DataExport
     users: [User]
     user(user_id: ID!): User
+    totalContacts: Int!
+    totalLeads: Int!
+    totalDeals: Int!
+    dealsByStage: [DealsByStage]!
+    leadsByStatus: [LeadsByStatus]!
   }
 
   type Mutation {
@@ -972,6 +987,7 @@ export const resolvers = {
     ...dataImportResolvers.Query,
     ...dataExportResolvers.Query,
     ...userResolvers.Query,
+    ...analyticsResolvers.Query,
     hello: () => 'Hello, world!',
   },
   Mutation: {

@@ -30,5 +30,11 @@
   "update_contact": "連絡先を更新",
   "cancel_edit": "編集をキャンセル",
   "existing_contacts": "既存の連絡先",
-  "no_contacts_found": "連絡先が見つかりません。"
+  "no_contacts_found": "連絡先が見つかりません。",
+  "dashboard": "ダッシュボード",
+  "total_contacts": "総連絡先数",
+  "total_leads": "総リード数",
+  "total_deals": "総案件数",
+  "deals_by_stage": "ステージ別案件",
+  "leads_by_status": "ステータス別リード"
 }

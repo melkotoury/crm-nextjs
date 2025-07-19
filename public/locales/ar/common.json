@@ -30,5 +30,11 @@
   "update_contact": "تحديث جهة الاتصال",
   "cancel_edit": "إلغاء التعديل",
   "existing_contacts": "جهات الاتصال الحالية",
-  "no_contacts_found": "لم يتم العثور على جهات اتصال."
+  "no_contacts_found": "لم يتم العثور على جهات اتصال.",
+  "dashboard": "لوحة القيادة",
+  "total_contacts": "إجمالي جهات الاتصال",
+  "total_leads": "إجمالي العملاء المحتملين",
+  "total_deals": "إجمالي الصفقات",
+  "deals_by_stage": "الصفقات حسب المرحلة",
+  "leads_by_status": "العملاء المحتملون حسب الحالة"
 }

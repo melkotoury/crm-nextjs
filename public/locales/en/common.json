@@ -30,5 +30,11 @@
   "update_contact": "Update Contact",
   "cancel_edit": "Cancel Edit",
   "existing_contacts": "Existing Contacts",
-  "no_contacts_found": "No contacts found."
+  "no_contacts_found": "No contacts found.",
+  "dashboard": "Dashboard",
+  "total_contacts": "Total Contacts",
+  "total_leads": "Total Leads",
+  "total_deals": "Total Deals",
+  "deals_by_stage": "Deals by Stage",
+  "leads_by_status": "Leads by Status"
 }

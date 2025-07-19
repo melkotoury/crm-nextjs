@@ -30,5 +30,11 @@
   "update_contact": "Kontakt aktualisieren",
   "cancel_edit": "Bearbeitung abbrechen",
   "existing_contacts": "Bestehende Kontakte",
-  "no_contacts_found": "Keine Kontakte gefunden."
+  "no_contacts_found": "Keine Kontakte gefunden.",
+  "dashboard": "Dashboard",
+  "total_contacts": "Gesamtzahl der Kontakte",
+  "total_leads": "Gesamtzahl der Leads",
+  "total_deals": "Gesamtzahl der Deals",
+  "deals_by_stage": "Deals nach Phase",
+  "leads_by_status": "Leads nach Status"
 }
