@@ -457,6 +457,60 @@ export const typeDefs = gql`
       old_value: String
       new_value: String
     ): AuditLog
+    addQuote(
+      deal_id: ID
+      quote_date: String
+      total_amount: Float
+      status: String
+    ): Quote
+    addProposal(
+      deal_id: ID
+      proposal_date: String
+      content: String
+      status: String
+    ): Proposal
+    addTerritory(
+      territory_name: String!
+      region: String
+      manager_user_id: ID
+    ): Territory
+    addTeamPerformance(
+      user_id: ID
+      metric_name: String!
+      metric_value: Float
+      record_date: String
+    ): TeamPerformance
+    addCustomerLifetimeValue(
+      contact_id: ID
+      lifetime_value: Float
+    ): CustomerLifetimeValue
+    addChurnPrediction(
+      contact_id: ID
+      churn_probability: Float
+    ): ChurnPrediction
+    addCrossSellingOpportunity(
+      contact_id: ID
+      product_service: String
+      likelihood: Float
+    ): CrossSellingOpportunity
+    addMarketTrend(
+      trend_name: String!
+      description: String
+      trend_date: String
+      impact_score: Int
+    ): MarketTrend
+    addDataImport(
+      file_name: String!
+      file_type: String
+      status: String
+      imported_by: ID
+    ): DataImport
+    addDataExport(
+      file_name: String!
+      file_type: String
+      status: String
+      exported_by: ID
+    ): DataExport
   }
 `;
 
@@ -561,6 +615,46 @@ export const resolvers = {
     },
     auditLogs: async () => {
       const { rows } = await pool.query('SELECT * FROM audit_logs');
+      return rows;
+    },
+    quotes: async () => {
+      const { rows } = await pool.query('SELECT * FROM quotes');
+      return rows;
+    },
+    proposals: async () => {
+      const { rows } = await pool.query('SELECT * FROM proposals');
+      return rows;
+    },
+    territories: async () => {
+      const { rows } = await pool.query('SELECT * FROM territories');
+      return rows;
+    },
+    teamPerformance: async () => {
+      const { rows } = await pool.query('SELECT * FROM team_performance');
+      return rows;
+    },
+    customerLifetimeValues: async () => {
+      const { rows } = await pool.query('SELECT * FROM customer_lifetime_value');
+      return rows;
+    },
+    churnPredictions: async () => {
+      const { rows } = await pool.query('SELECT * FROM churn_prediction');
+      return rows;
+    },
+    crossSellingOpportunities: async () => {
+      const { rows } = await pool.query('SELECT * FROM cross_selling_opportunities');
+      return rows;
+    },
+    marketTrends: async () => {
+      const { rows } = await pool.query('SELECT * FROM market_trends');
+      return rows;
+    },
+    dataImports: async () => {
+      const { rows } = await pool.query('SELECT * FROM data_imports');
+      return rows;
+    },
+    dataExports: async () => {
+      const { rows } = await pool.query('SELECT * FROM data_exports');
       return rows;
     },
   },
