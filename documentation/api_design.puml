@@ -1,0 +1,16 @@
+@startuml
+' API Design Placeholder
+
+participant Client
+participant GraphQL_API
+participant Prisma
+participant Database
+
+Client -> GraphQL_API: GraphQL Request (Query/Mutation)
+GraphQL_API -> Prisma: Call Prisma Client Method
+Prisma -> Database: ORM Query
+Database --> Prisma: Query Result
+Prisma --> GraphQL_API: Data
+GraphQL_API --> Client: GraphQL Response
+
+@enduml

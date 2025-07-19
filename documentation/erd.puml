@@ -1,0 +1,27 @@
+@startuml
+' ERD Diagram Placeholder
+
+entity Contact {
+  *contact_id: integer
+  --
+  *first_name: varchar
+  *last_name: varchar
+  *email: varchar
+  phone_number: varchar
+  company: varchar
+  job_title: varchar
+}
+
+entity User {
+  *user_id: integer
+  --
+  *username: varchar
+  *password_hash: varchar
+  *email: varchar
+  full_name: varchar
+  role: varchar
+}
+
+Contact ||--o{ User : "assigned_to"
+
+@enduml

@@ -2,6 +2,8 @@
 
 This document outlines the design and structure of the CRM's GraphQL API. The API is built to provide a flexible and efficient way to interact with the CRM data.
 
+For the PlantUML source, refer to [`api_design.puml`](api_design.puml).
+
 ## Base URL
 
 The GraphQL API is accessible at:

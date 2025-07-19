@@ -1,0 +1,10 @@
+@startuml
+' UML Diagram Placeholder
+
+actor User
+participant System
+
+User -> System: Performs action
+System --> User: Provides response
+
+@enduml
