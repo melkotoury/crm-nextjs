@@ -21,6 +21,9 @@ export default function CustomizationPage() {
   const [selectedRoleId, setSelectedRoleId] = useState('');
   const [selectedPermissionId, setSelectedPermissionId] = useState('');
 
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [editingPermission, setEditingPermission] = useState<Permission | null>(null);
+
   useEffect(() => {
     fetchRoles();
     fetchPermissions();
@@ -72,55 +75,123 @@ export default function CustomizationPage() {
     }
   };
 
-  const handleAddRole = async (e: React.FormEvent) => {
+  const handleRoleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await fetch('/api/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `
-          mutation AddRole($role_name: String!) {
-            addRole(role_name: $role_name) {
-              role_id
-              role_name
+    if (editingRole) {
+      // Update role
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation UpdateRole($role_id: ID!, $role_name: String) {
+              updateRole(role_id: $role_id, role_name: $role_name) {
+                role_id
+                role_name
+              }
             }
-          }
-        `,
-        variables: { role_name: newRoleName },
-      }),
-    });
-    const result = await response.json();
-    if (result.data && result.data.addRole) {
-      setRoles((prevRoles) => [...prevRoles, result.data.addRole]);
-      setNewRoleName('');
+          `,
+          variables: { role_id: editingRole.role_id, role_name: newRoleName },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.updateRole) {
+        setRoles((prevRoles) =>
+          prevRoles.map((role) =>
+            role.role_id === result.data.updateRole.role_id
+              ? result.data.updateRole
+              : role
+          )
+        );
+        setEditingRole(null);
+        setNewRoleName('');
+      }
+    } else {
+      // Add new role
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation AddRole($role_name: String!) {
+              addRole(role_name: $role_name) {
+                role_id
+                role_name
+              }
+            }
+          `,
+          variables: { role_name: newRoleName },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.addRole) {
+        setRoles((prevRoles) => [...prevRoles, result.data.addRole]);
+        setNewRoleName('');
+      }
     }
   };
 
-  const handleAddPermission = async (e: React.FormEvent) => {
+  const handlePermissionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await fetch('/api/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `
-          mutation AddPermission($permission_name: String!) {
-            addPermission(permission_name: $permission_name) {
-              permission_id
-              permission_name
+    if (editingPermission) {
+      // Update permission
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation UpdatePermission($permission_id: ID!, $permission_name: String) {
+              updatePermission(permission_id: $permission_id, permission_name: $permission_name) {
+                permission_id
+                permission_name
+              }
             }
-          }
-        `,
-        variables: { permission_name: newPermissionName },
-      }),
-    });
-    const result = await response.json();
-    if (result.data && result.data.addPermission) {
-      setPermissions((prevPermissions) => [...prevPermissions, result.data.addPermission]);
-      setNewPermissionName('');
+          `,
+          variables: { permission_id: editingPermission.permission_id, permission_name: newPermissionName },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.updatePermission) {
+        setPermissions((prevPermissions) =>
+          prevPermissions.map((permission) =>
+            permission.permission_id === result.data.updatePermission.permission_id
+              ? result.data.updatePermission
+              : permission
+          )
+        );
+        setEditingPermission(null);
+        setNewPermissionName('');
+      }
+    } else {
+      // Add new permission
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation AddPermission($permission_name: String!) {
+              addPermission(permission_name: $permission_name) {
+                permission_id
+                permission_name
+              }
+            }
+          `,
+          variables: { permission_name: newPermissionName },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.addPermission) {
+        setPermissions((prevPermissions) => [...prevPermissions, result.data.addPermission]);
+        setNewPermissionName('');
+      }
     }
   };
 
@@ -154,13 +225,93 @@ export default function CustomizationPage() {
     }
   };
 
+  const handleEditRoleClick = (role: Role) => {
+    setEditingRole(role);
+    setNewRoleName(role.role_name);
+  };
+
+  const handleDeleteRole = async (role_id: string) => {
+    const response = await fetch('/api/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation DeleteRole($role_id: ID!) {
+            deleteRole(role_id: $role_id)
+          }
+        `,
+        variables: { role_id },
+      }),
+    });
+    const result = await response.json();
+    if (result.data && result.data.deleteRole) {
+      setRoles((prevRoles) => prevRoles.filter((role) => role.role_id !== role_id));
+    }
+  };
+
+  const handleEditPermissionClick = (permission: Permission) => {
+    setEditingPermission(permission);
+    setNewPermissionName(permission.permission_name);
+  };
+
+  const handleDeletePermission = async (permission_id: string) => {
+    const response = await fetch('/api/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation DeletePermission($permission_id: ID!) {
+            deletePermission(permission_id: $permission_id)
+          }
+        `,
+        variables: { permission_id },
+      }),
+    });
+    const result = await response.json();
+    if (result.data && result.data.deletePermission) {
+      setPermissions((prevPermissions) =>
+        prevPermissions.filter((permission) => permission.permission_id !== permission_id)
+      );
+    }
+  };
+
+  const handleDeleteRolePermission = async (role_id: string, permission_id: string) => {
+    const response = await fetch('/api/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation DeleteRolePermission($role_id: ID!, $permission_id: ID!) {
+            deleteRolePermission(role_id: $role_id, permission_id: $permission_id)
+          }
+        `,
+        variables: { role_id, permission_id },
+      }),
+    });
+    const result = await response.json();
+    if (result.data && result.data.deleteRolePermission) {
+      alert('Role permission deleted successfully!');
+      // Re-fetch roles and permissions to update the display if needed
+      fetchRoles();
+      fetchPermissions();
+    } else {
+      alert('Failed to delete role permission.');
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Customization - Roles & Permissions</h1>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Add New Role</h2>
-        <form onSubmit={handleAddRole} className="flex gap-2">
+        <h2 className="text-xl font-semibold mb-2">{editingRole ? 'Edit Role' : 'Add New Role'}</h2>
+        <form onSubmit={handleRoleSubmit} className="flex gap-2">
           <input
             type="text"
             placeholder="Role Name"
@@ -170,8 +321,20 @@ export default function CustomizationPage() {
             className="p-2 border rounded flex-grow"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-            Add Role
+            {editingRole ? 'Update Role' : 'Add Role'}
           </button>
+          {editingRole && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingRole(null);
+                setNewRoleName('');
+              }}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
       </div>
 
@@ -182,8 +345,22 @@ export default function CustomizationPage() {
         ) : (
           <ul className="space-y-2">
             {roles.map((role) => (
-              <li key={role.role_id} className="p-3 border rounded shadow-sm">
-                {role.role_name}
+              <li key={role.role_id} className="p-3 border rounded shadow-sm flex justify-between items-center">
+                <div>{role.role_name}</div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditRoleClick(role)}
+                    className="bg-yellow-500 text-white p-2 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteRole(role.role_id)}
+                    className="bg-red-500 text-white p-2 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -191,8 +368,8 @@ export default function CustomizationPage() {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Add New Permission</h2>
-        <form onSubmit={handleAddPermission} className="flex gap-2">
+        <h2 className="text-xl font-semibold mb-2">{editingPermission ? 'Edit Permission' : 'Add New Permission'}</h2>
+        <form onSubmit={handlePermissionSubmit} className="flex gap-2">
           <input
             type="text"
             placeholder="Permission Name"
@@ -202,8 +379,20 @@ export default function CustomizationPage() {
             className="p-2 border rounded flex-grow"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-            Add Permission
+            {editingPermission ? 'Update Permission' : 'Add Permission'}
           </button>
+          {editingPermission && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingPermission(null);
+                setNewPermissionName('');
+              }}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
       </div>
 
@@ -214,8 +403,22 @@ export default function CustomizationPage() {
         ) : (
           <ul className="space-y-2">
             {permissions.map((permission) => (
-              <li key={permission.permission_id} className="p-3 border rounded shadow-sm">
-                {permission.permission_name}
+              <li key={permission.permission_id} className="p-3 border rounded shadow-sm flex justify-between items-center">
+                <div>{permission.permission_name}</div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditPermissionClick(permission)}
+                    className="bg-yellow-500 text-white p-2 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeletePermission(permission.permission_id)}
+                    className="bg-red-500 text-white p-2 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -256,6 +459,8 @@ export default function CustomizationPage() {
           </button>
         </form>
       </div>
+
+      {/* Add section for deleting role permissions if needed */}
     </div>
   );
 }
