@@ -263,3 +263,31 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     new_value JSONB,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: shared_calendars
+CREATE TABLE IF NOT EXISTS shared_calendars (
+    calendar_id SERIAL PRIMARY KEY,
+    calendar_name VARCHAR(255) NOT NULL,
+    owner_user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: documents
+CREATE TABLE IF NOT EXISTS documents (
+    document_id SERIAL PRIMARY KEY,
+    document_name VARCHAR(255) NOT NULL,
+    document_url TEXT NOT NULL,
+    owner_user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: team_members
+CREATE TABLE IF NOT EXISTS team_members (
+    team_member_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) UNIQUE,
+    team_role VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

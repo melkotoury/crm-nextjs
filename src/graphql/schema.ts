@@ -145,6 +145,25 @@ export const typeDefs = gql`
     permission_name: String!
   }
 
+  type SharedCalendar {
+    calendar_id: ID!
+    calendar_name: String!
+    owner_user_id: ID
+  }
+
+  type Document {
+    document_id: ID!
+    document_name: String!
+    document_url: String!
+    owner_user_id: ID
+  }
+
+  type TeamMember {
+    team_member_id: ID!
+    user_id: ID!
+    team_role: String
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -164,6 +183,9 @@ export const typeDefs = gql`
     integrations: [Integration]
     roles: [Role]
     permissions: [Permission]
+    sharedCalendars: [SharedCalendar]
+    documents: [Document]
+    teamMembers: [TeamMember]
   }
 
   type Mutation {
@@ -280,6 +302,19 @@ export const typeDefs = gql`
       role_id: ID!
       permission_id: ID!
     ): Boolean
+    addSharedCalendar(
+      calendar_name: String!
+      owner_user_id: ID
+    ): SharedCalendar
+    addDocument(
+      document_name: String!
+      document_url: String!
+      owner_user_id: ID
+    ): Document
+    addTeamMember(
+      user_id: ID!
+      team_role: String
+    ): TeamMember
   }
 `;
 
@@ -352,6 +387,18 @@ export const resolvers = {
     },
     permissions: async () => {
       const { rows } = await pool.query('SELECT * FROM permissions');
+      return rows;
+    },
+    sharedCalendars: async () => {
+      const { rows } = await pool.query('SELECT * FROM shared_calendars');
+      return rows;
+    },
+    documents: async () => {
+      const { rows } = await pool.query('SELECT * FROM documents');
+      return rows;
+    },
+    teamMembers: async () => {
+      const { rows } = await pool.query('SELECT * FROM team_members');
       return rows;
     },
   },
