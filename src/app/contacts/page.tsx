@@ -22,6 +22,7 @@ export default function ContactsPage() {
     company: '',
     job_title: '',
   });
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
   useEffect(() => {
     fetchContacts();
@@ -63,8 +64,103 @@ export default function ContactsPage() {
     }));
   };
 
-  const handleAddContact = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (editingContact) {
+      // Update contact
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation UpdateContact($contact_id: ID!, $first_name: String, $last_name: String, $email: String, $phone_number: String, $company: String, $job_title: String) {
+              updateContact(contact_id: $contact_id, first_name: $first_name, last_name: $last_name, email: $email, phone_number: $phone_number, company: $company, job_title: $job_title) {
+                contact_id
+                first_name
+                last_name
+                email
+                phone_number
+                company
+                job_title
+              }
+            }
+          `,
+          variables: { contact_id: editingContact.contact_id, ...formData },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.updateContact) {
+        setContacts((prevContacts) =>
+          prevContacts.map((contact) =>
+            contact.contact_id === result.data.updateContact.contact_id
+              ? result.data.updateContact
+              : contact
+          )
+        );
+        setEditingContact(null);
+        setFormData({
+          first_name: '',
+          last_name: '',
+          email: '',
+          phone_number: '',
+          company: '',
+          job_title: '',
+        });
+      }
+    } else {
+      // Add new contact
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation AddContact($first_name: String!, $last_name: String!, $email: String!, $phone_number: String, $company: String, $job_title: String) {
+              addContact(first_name: $first_name, last_name: $last_name, email: $email, phone_number: $phone_number, company: $company, job_title: $job_title) {
+                contact_id
+                first_name
+                last_name
+                email
+                phone_number
+                company
+                job_title
+              }
+            }
+          `,
+          variables: formData,
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.addContact) {
+        setContacts((prevContacts) => [...prevContacts, result.data.addContact]);
+        setFormData({
+          first_name: '',
+          last_name: '',
+          email: '',
+          phone_number: '',
+          company: '',
+          job_title: '',
+        });
+      }
+    }
+  };
+
+  const handleEditClick = (contact: Contact) => {
+    setEditingContact(contact);
+    setFormData({
+      first_name: contact.first_name,
+      last_name: contact.last_name,
+      email: contact.email,
+      phone_number: contact.phone_number || '',
+      company: contact.company || '',
+      job_title: contact.job_title || '',
+    });
+  };
+
+  const handleDeleteContact = async (contact_id: string) => {
     const response = await fetch('/api/graphql', {
       method: 'POST',
       headers: {
@@ -72,29 +168,18 @@ export default function ContactsPage() {
       },
       body: JSON.stringify({
         query: `
-          mutation AddContact($first_name: String!, $last_name: String!, $email: String!, $phone_number: String, $company: String, $job_title: String) {
-            addContact(first_name: $first_name, last_name: $last_name, email: $email, phone_number: $phone_number, company: $company, job_title: $job_title) {
-              contact_id
-              first_name
-              last_name
-              email
-            }
+          mutation DeleteContact($contact_id: ID!) {
+            deleteContact(contact_id: $contact_id)
           }
         `,
-        variables: formData,
+        variables: { contact_id },
       }),
     });
     const result = await response.json();
-    if (result.data && result.data.addContact) {
-      setContacts((prevContacts) => [...prevContacts, result.data.addContact]);
-      setFormData({
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone_number: '',
-        company: '',
-        job_title: '',
-      });
+    if (result.data && result.data.deleteContact) {
+      setContacts((prevContacts) =>
+        prevContacts.filter((contact) => contact.contact_id !== contact_id)
+      );
     }
   };
 
@@ -103,8 +188,8 @@ export default function ContactsPage() {
       <h1 className="text-2xl font-bold mb-4">Contact Management</h1>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Add New Contact</h2>
-        <form onSubmit={handleAddContact} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h2 className="text-xl font-semibold mb-2">{editingContact ? 'Edit Contact' : 'Add New Contact'}</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
             name="first_name"
@@ -157,8 +242,27 @@ export default function ContactsPage() {
             className="p-2 border rounded"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded col-span-full">
-            Add Contact
+            {editingContact ? 'Update Contact' : 'Add Contact'}
           </button>
+          {editingContact && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingContact(null);
+                setFormData({
+                  first_name: '',
+                  last_name: '',
+                  email: '',
+                  phone_number: '',
+                  company: '',
+                  job_title: '',
+                });
+              }}
+              className="bg-gray-500 text-white p-2 rounded col-span-full mt-2"
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
       </div>
 
@@ -169,12 +273,28 @@ export default function ContactsPage() {
         ) : (
           <ul className="space-y-2">
             {contacts.map((contact) => (
-              <li key={contact.contact_id} className="p-3 border rounded shadow-sm">
-                <p className="font-medium">{contact.first_name} {contact.last_name}</p>
-                <p className="text-sm text-gray-600">{contact.email}</p>
-                {contact.company && <p className="text-sm text-gray-600">{contact.company}</p>}
-                {contact.job_title && <p className="text-sm text-gray-600">{contact.job_title}</p>}
-                {contact.phone_number && <p className="text-sm text-gray-600">{contact.phone_number}</p>}
+              <li key={contact.contact_id} className="p-3 border rounded shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{contact.first_name} {contact.last_name}</p>
+                  <p className="text-sm text-gray-600">{contact.email}</p>
+                  {contact.company && <p className="text-sm text-gray-600">{contact.company}</p>}
+                  {contact.job_title && <p className="text-sm text-gray-600">{contact.job_title}</p>}
+                  {contact.phone_number && <p className="text-sm text-gray-600">{contact.phone_number}</p>}
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditClick(contact)}
+                    className="bg-yellow-500 text-white p-2 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteContact(contact.contact_id)}
+                    className="bg-red-500 text-white p-2 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
