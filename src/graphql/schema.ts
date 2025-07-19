@@ -32,11 +32,45 @@ export const typeDefs = gql`
     user_id: ID
   }
 
+  type Campaign {
+    campaign_id: ID!
+    campaign_name: String!
+    start_date: String
+    end_date: String
+    budget: Float
+    status: String
+  }
+
+  type Email {
+    email_id: ID!
+    campaign_id: ID
+    subject: String!
+    body: String
+    sent_date: String
+    recipient_count: Int
+    open_rate: Float
+    click_through_rate: Float
+  }
+
+  type SocialPost {
+    post_id: ID!
+    campaign_id: ID
+    platform: String!
+    content: String!
+    post_date: String
+    likes: Int
+    shares: Int
+    comments: Int
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
     leads: [Lead]
     deals: [Deal]
+    campaigns: [Campaign]
+    emails: [Email]
+    socialPosts: [SocialPost]
   }
 
   type Mutation {
@@ -64,6 +98,31 @@ export const typeDefs = gql`
       contact_id: ID
       user_id: ID
     ): Deal
+    addCampaign(
+      campaign_name: String!
+      start_date: String
+      end_date: String
+      budget: Float
+      status: String
+    ): Campaign
+    addEmail(
+      campaign_id: ID
+      subject: String!
+      body: String
+      sent_date: String
+      recipient_count: Int
+      open_rate: Float
+      click_through_rate: Float
+    ): Email
+    addSocialPost(
+      campaign_id: ID
+      platform: String!
+      content: String!
+      post_date: String
+      likes: Int
+      shares: Int
+      comments: Int
+    ): SocialPost
   }
 `;
 
@@ -78,8 +137,20 @@ export const resolvers = {
       const { rows } = await pool.query('SELECT * FROM leads');
       return rows;
     },
-    opportunities: async () => {
-      const { rows } = await pool.query('SELECT * FROM opportunities');
+    deals: async () => {
+      const { rows } = await pool.query('SELECT * FROM deals');
+      return rows;
+    },
+    campaigns: async () => {
+      const { rows } = await pool.query('SELECT * FROM campaigns');
+      return rows;
+    },
+    emails: async () => {
+      const { rows } = await pool.query('SELECT * FROM emails');
+      return rows;
+    },
+    socialPosts: async () => {
+      const { rows } = await pool.query('SELECT * FROM social_posts');
       return rows;
     },
   },
@@ -105,6 +176,30 @@ export const resolvers = {
       const { rows } = await pool.query(
         'INSERT INTO deals (deal_name, stage, amount, close_date, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
         [deal_name, stage, amount, close_date, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addCampaign: async (_: any, args: any) => {
+      const { campaign_name, start_date, end_date, budget, status } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO campaigns (campaign_name, start_date, end_date, budget, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [campaign_name, start_date, end_date, budget, status]
+      );
+      return rows[0];
+    },
+    addEmail: async (_: any, args: any) => {
+      const { campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO emails (campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate]
+      );
+      return rows[0];
+    },
+    addSocialPost: async (_: any, args: any) => {
+      const { campaign_id, platform, content, post_date, likes, shares, comments } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO social_posts (campaign_id, platform, content, post_date, likes, shares, comments) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [campaign_id, platform, content, post_date, likes, shares, comments]
       );
       return rows[0];
     },

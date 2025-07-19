@@ -90,3 +90,40 @@ CREATE TABLE IF NOT EXISTS opportunities (
     user_id INT REFERENCES users(user_id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: campaigns
+CREATE TABLE IF NOT EXISTS campaigns (
+    campaign_id SERIAL PRIMARY KEY,
+    campaign_name VARCHAR(255) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    budget DECIMAL(10, 2),
+    status VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: emails
+CREATE TABLE IF NOT EXISTS emails (
+    email_id SERIAL PRIMARY KEY,
+    campaign_id INT REFERENCES campaigns(campaign_id),
+    subject VARCHAR(255) NOT NULL,
+    body TEXT,
+    sent_date TIMESTAMP WITH TIME ZONE,
+    recipient_count INT,
+    open_rate DECIMAL(5, 2),
+    click_through_rate DECIMAL(5, 2),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: social_posts
+CREATE TABLE IF NOT EXISTS social_posts (
+    post_id SERIAL PRIMARY KEY,
+    campaign_id INT REFERENCES campaigns(campaign_id),
+    platform VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    post_date TIMESTAMP WITH TIME ZONE,
+    likes INT DEFAULT 0,
+    shares INT DEFAULT 0,
+    comments INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
