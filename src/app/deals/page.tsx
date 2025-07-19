@@ -22,6 +22,7 @@ export default function DealsPage() {
     contact_id: '',
     user_id: '',
   });
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
 
   useEffect(() => {
     fetchDeals();
@@ -63,8 +64,110 @@ export default function DealsPage() {
     }));
   };
 
-  const handleAddDeal = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (editingDeal) {
+      // Update deal
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation UpdateDeal($deal_id: ID!, $deal_name: String, $stage: String, $amount: Float, $close_date: String, $contact_id: ID, $user_id: ID) {
+              updateDeal(deal_id: $deal_id, deal_name: $deal_name, stage: $stage, amount: $amount, close_date: $close_date, contact_id: $contact_id, user_id: $user_id) {
+                deal_id
+                deal_name
+                stage
+                amount
+                close_date
+                contact_id
+                user_id
+              }
+            }
+          `,
+          variables: {
+            deal_id: editingDeal.deal_id,
+            ...formData,
+            amount: formData.amount ? parseFloat(formData.amount) : null,
+          },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.updateDeal) {
+        setDeals((prevDeals) =>
+          prevDeals.map((deal) =>
+            deal.deal_id === result.data.updateDeal.deal_id
+              ? result.data.updateDeal
+              : deal
+          )
+        );
+        setEditingDeal(null);
+        setFormData({
+          deal_name: '',
+          stage: 'Prospecting',
+          amount: '',
+          close_date: '',
+          contact_id: '',
+          user_id: '',
+        });
+      }
+    } else {
+      // Add new deal
+      const response = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation AddDeal($deal_name: String!, $stage: String!, $amount: Float, $close_date: String, $contact_id: ID, $user_id: ID) {
+              addDeal(deal_name: $deal_name, stage: $stage, amount: $amount, close_date: $close_date, contact_id: $contact_id, user_id: $user_id) {
+                deal_id
+                deal_name
+                stage
+                amount
+                close_date
+                contact_id
+                user_id
+              }
+            }
+          `,
+          variables: {
+            ...formData,
+            amount: formData.amount ? parseFloat(formData.amount) : null,
+          },
+        }),
+      });
+      const result = await response.json();
+      if (result.data && result.data.addDeal) {
+        setDeals((prevDeals) => [...prevDeals, result.data.addDeal]);
+        setFormData({
+          deal_name: '',
+          stage: 'Prospecting',
+          amount: '',
+          close_date: '',
+          contact_id: '',
+          user_id: '',
+        });
+      }
+    }
+  };
+
+  const handleEditClick = (deal: Deal) => {
+    setEditingDeal(deal);
+    setFormData({
+      deal_name: deal.deal_name,
+      stage: deal.stage,
+      amount: deal.amount ? String(deal.amount) : '',
+      close_date: deal.close_date || '',
+      contact_id: deal.contact_id || '',
+      user_id: deal.user_id || '',
+    });
+  };
+
+  const handleDeleteDeal = async (deal_id: string) => {
     const response = await fetch('/api/graphql', {
       method: 'POST',
       headers: {
@@ -72,32 +175,18 @@ export default function DealsPage() {
       },
       body: JSON.stringify({
         query: `
-          mutation AddDeal($deal_name: String!, $stage: String!, $amount: Float, $close_date: String, $contact_id: ID, $user_id: ID) {
-            addDeal(deal_name: $deal_name, stage: $stage, amount: $amount, close_date: $close_date, contact_id: $contact_id, user_id: $user_id) {
-              deal_id
-              deal_name
-              stage
-              amount
-            }
+          mutation DeleteDeal($deal_id: ID!) {
+            deleteDeal(deal_id: $deal_id)
           }
         `,
-        variables: {
-          ...formData,
-          amount: formData.amount ? parseFloat(formData.amount) : null,
-        },
+        variables: { deal_id },
       }),
     });
     const result = await response.json();
-    if (result.data && result.data.addDeal) {
-      setDeals((prevDeals) => [...prevDeals, result.data.addDeal]);
-      setFormData({
-        deal_name: '',
-        stage: 'Prospecting',
-        amount: '',
-        close_date: '',
-        contact_id: '',
-        user_id: '',
-      });
+    if (result.data && result.data.deleteDeal) {
+      setDeals((prevDeals) =>
+        prevDeals.filter((deal) => deal.deal_id !== deal_id)
+      );
     }
   };
 
@@ -106,8 +195,8 @@ export default function DealsPage() {
       <h1 className="text-2xl font-bold mb-4">Deal Management</h1>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Add New Deal</h2>
-        <form onSubmit={handleAddDeal} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h2 className="text-xl font-semibold mb-2">{editingDeal ? 'Edit Deal' : 'Add New Deal'}</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
             name="deal_name"
@@ -164,8 +253,27 @@ export default function DealsPage() {
             className="p-2 border rounded"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded col-span-full">
-            Add Deal
+            {editingDeal ? 'Update Deal' : 'Add Deal'}
           </button>
+          {editingDeal && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingDeal(null);
+                setFormData({
+                  deal_name: '',
+                  stage: 'Prospecting',
+                  amount: '',
+                  close_date: '',
+                  contact_id: '',
+                  user_id: '',
+                });
+              }}
+              className="bg-gray-500 text-white p-2 rounded col-span-full mt-2"
+            >
+              Cancel Edit
+            </button>
+          )}
         </form>
       </div>
 
@@ -176,11 +284,27 @@ export default function DealsPage() {
         ) : (
           <ul className="space-y-2">
             {deals.map((deal) => (
-              <li key={deal.deal_id} className="p-3 border rounded shadow-sm">
-                <p className="font-medium">{deal.deal_name}</p>
-                <p className="text-sm text-gray-600">Stage: {deal.stage}</p>
-                {deal.amount && <p className="text-sm text-gray-600">Amount: ${deal.amount}</p>}
-                {deal.close_date && <p className="text-sm text-gray-600">Close Date: {deal.close_date}</p>}
+              <li key={deal.deal_id} className="p-3 border rounded shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{deal.deal_name}</p>
+                  <p className="text-sm text-gray-600">Stage: {deal.stage}</p>
+                  {deal.amount && <p className="text-sm text-gray-600">Amount: ${deal.amount}</p>}
+                  {deal.close_date && <p className="text-sm text-gray-600">Close Date: {deal.close_date}</p>}
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditClick(deal)}
+                    className="bg-yellow-500 text-white p-2 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteDeal(deal.deal_id)}
+                    className="bg-red-500 text-white p-2 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
