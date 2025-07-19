@@ -1,0 +1,35 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Link from "next/link";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Professional CRM",
+  description: "A comprehensive CRM solution",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <nav className="bg-gray-800 p-4">
+          <div className="container mx-auto flex justify-between">
+            <Link href="/" className="text-white font-bold">CRM</Link>
+            <div>
+              <Link href="/" className="text-gray-300 hover:text-white mr-4">Contacts</Link>
+              <Link href="/leads" className="text-gray-300 hover:text-white mr-4">Leads</Link>
+              <Link href="/opportunities" className="text-gray-300 hover:text-white">Opportunities</Link>
+            </div>
+          </div>
+        </nav>
+        {children}
+      </body>
+    </html>
+  );
+}

@@ -8,7 +8,7 @@
 -- 5. interactions
 
 -- Table: contacts
-CREATE TABLE contacts (
+CREATE TABLE IF NOT EXISTS contacts (
     contact_id SERIAL PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE contacts (
 );
 
 -- Table: users
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE users (
 );
 
 -- Table: deals
-CREATE TABLE deals (
+CREATE TABLE IF NOT EXISTS deals (
     deal_id SERIAL PRIMARY KEY,
     deal_name VARCHAR(255) NOT NULL,
     stage VARCHAR(100) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE deals (
 );
 
 -- Table: tasks
-CREATE TABLE tasks (
+CREATE TABLE IF NOT EXISTS tasks (
     task_id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -56,11 +56,36 @@ CREATE TABLE tasks (
 );
 
 -- Table: interactions
-CREATE TABLE interactions (
+CREATE TABLE IF NOT EXISTS interactions (
     interaction_id SERIAL PRIMARY KEY,
     type VARCHAR(100) NOT NULL, -- e.g., email, call, meeting
     notes TEXT,
     interaction_date TIMESTAMP WITH TIME ZONE,
+    contact_id INT REFERENCES contacts(contact_id),
+    user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: leads
+CREATE TABLE IF NOT EXISTS leads (
+    lead_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    company VARCHAR(255),
+    status VARCHAR(100) NOT NULL,
+    source VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: opportunities
+CREATE TABLE IF NOT EXISTS opportunities (
+    opportunity_id SERIAL PRIMARY KEY,
+    opportunity_name VARCHAR(255) NOT NULL,
+    stage VARCHAR(100) NOT NULL,
+    amount DECIMAL(10, 2),
+    close_date DATE,
     contact_id INT REFERENCES contacts(contact_id),
     user_id INT REFERENCES users(user_id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
