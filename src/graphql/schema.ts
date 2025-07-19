@@ -1,5 +1,41 @@
 import { gql } from 'graphql-tag';
-import pool from '@/db';
+import { contactResolvers } from './resolvers/contact';
+import { leadResolvers } from './resolvers/lead';
+import { dealResolvers } from './resolvers/deal';
+import { campaignResolvers } from './resolvers/campaign';
+import { emailResolvers } from './resolvers/email';
+import { socialPostResolvers } from './resolvers/socialPost';
+import { ticketResolvers } from './resolvers/ticket';
+import { knowledgeBaseArticleResolvers } from './resolvers/knowledgeBaseArticle';
+import { reportResolvers } from './resolvers/report';
+import { dashboardResolvers } from './resolvers/dashboard';
+import { workflowResolvers } from './resolvers/workflow';
+import { workflowStepResolvers } from './resolvers/workflowStep';
+import { callResolvers } from './resolvers/call';
+import { meetingResolvers } from './resolvers/meeting';
+import { integrationResolvers } from './resolvers/integration';
+import { roleResolvers } from './resolvers/role';
+import { permissionResolvers } from './resolvers/permission';
+import { sharedCalendarResolvers } from './resolvers/sharedCalendar';
+import { documentResolvers } from './resolvers/document';
+import { teamMemberResolvers } from './resolvers/teamMember';
+import { aiModelResolvers } from './resolvers/aiModel';
+import { predictionResolvers } from './resolvers/prediction';
+import { userProfileResolvers } from './resolvers/userProfile';
+import { userSettingResolvers } from './resolvers/userSetting';
+import { auditLogResolvers } from './resolvers/auditLog';
+import { quoteResolvers } from './resolvers/quote';
+import { proposalResolvers } from './resolvers/proposal';
+import { territoryResolvers } from './resolvers/territory';
+import { teamPerformanceResolvers } from './resolvers/teamPerformance';
+import { customerLifetimeValueResolvers } from './resolvers/customerLifetimeValue';
+import { churnPredictionResolvers } from './resolvers/churnPrediction';
+import { crossSellingOpportunityResolvers } from './resolvers/crossSellingOpportunity';
+import { marketTrendResolvers } from './resolvers/marketTrend';
+import { dataImportResolvers } from './resolvers/dataImport';
+import { dataExportResolvers } from './resolvers/dataExport';
+import { userResolvers } from './resolvers/user';
+
 
 export const typeDefs = gql`
   type Contact {
@@ -282,43 +318,88 @@ export const typeDefs = gql`
     exported_at: String
   }
 
+  type User {
+    user_id: ID!
+    username: String!
+    email: String!
+    full_name: String
+    role: String
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
+    contact(contact_id: ID!): Contact
     leads: [Lead]
+    lead(lead_id: ID!): Lead
     deals: [Deal]
+    deal(deal_id: ID!): Deal
     campaigns: [Campaign]
+    campaign(campaign_id: ID!): Campaign
     emails: [Email]
+    email(email_id: ID!): Email
     socialPosts: [SocialPost]
+    socialPost(post_id: ID!): SocialPost
     tickets: [Ticket]
+    ticket(ticket_id: ID!): Ticket
     knowledgeBaseArticles: [KnowledgeBaseArticle]
+    knowledgeBaseArticle(article_id: ID!): KnowledgeBaseArticle
     reports: [Report]
+    report(report_id: ID!): Report
     dashboards: [Dashboard]
+    dashboard(dashboard_id: ID!): Dashboard
     workflows: [Workflow]
+    workflow(workflow_id: ID!): Workflow
     workflowSteps: [WorkflowStep]
+    workflowStep(step_id: ID!): WorkflowStep
     calls: [Call]
+    call(call_id: ID!): Call
     meetings: [Meeting]
+    meeting(meeting_id: ID!): Meeting
     integrations: [Integration]
+    integration(integration_id: ID!): Integration
     roles: [Role]
+    role(role_id: ID!): Role
     permissions: [Permission]
+    permission(permission_id: ID!): Permission
     sharedCalendars: [SharedCalendar]
+    sharedCalendar(calendar_id: ID!): SharedCalendar
     documents: [Document]
+    document(document_id: ID!): Document
     teamMembers: [TeamMember]
+    teamMember(user_id: ID!): TeamMember
     aiModels: [AIModel]
+    aiModel(model_id: ID!): AIModel
     predictions: [Prediction]
+    prediction(prediction_id: ID!): Prediction
     userProfiles: [UserProfile]
+    userProfile(profile_id: ID!): UserProfile
     userSettings: [UserSetting]
+    userSetting(user_id: ID!): UserSetting
     auditLogs: [AuditLog]
+    auditLog(log_id: ID!): AuditLog
     quotes: [Quote]
+    quote(quote_id: ID!): Quote
     proposals: [Proposal]
+    proposal(proposal_id: ID!): Proposal
     territories: [Territory]
+    territory(territory_id: ID!): Territory
     teamPerformance: [TeamPerformance]
+    teamPerformanceRecord(performance_id: ID!): TeamPerformance
     customerLifetimeValues: [CustomerLifetimeValue]
+    customerLifetimeValue(clv_id: ID!): CustomerLifetimeValue
     churnPredictions: [ChurnPrediction]
+    churnPrediction(churn_id: ID!): ChurnPrediction
     crossSellingOpportunities: [CrossSellingOpportunity]
+    crossSellingOpportunity(opportunity_id: ID!): CrossSellingOpportunity
     marketTrends: [MarketTrend]
+    marketTrend(trend_id: ID!): MarketTrend
     dataImports: [DataImport]
+    dataImport(import_id: ID!): DataImport
     dataExports: [DataExport]
+    dataExport(export_id: ID!): DataExport
+    users: [User]
+    user(user_id: ID!): User
   }
 
   type Mutation {
@@ -330,6 +411,17 @@ export const typeDefs = gql`
       company: String
       job_title: String
     ): Contact
+    updateContact(
+      contact_id: ID!
+      first_name: String
+      last_name: String
+      email: String
+      phone_number: String
+      company: String
+      job_title: String
+    ): Contact
+    deleteContact(contact_id: ID!): Boolean
+
     addLead(
       first_name: String!
       last_name: String!
@@ -338,6 +430,17 @@ export const typeDefs = gql`
       status: String!
       source: String
     ): Lead
+    updateLead(
+      lead_id: ID!
+      first_name: String
+      last_name: String
+      email: String
+      company: String
+      status: String
+      source: String
+    ): Lead
+    deleteLead(lead_id: ID!): Boolean
+
     addDeal(
       deal_name: String!
       stage: String!
@@ -346,6 +449,17 @@ export const typeDefs = gql`
       contact_id: ID
       user_id: ID
     ): Deal
+    updateDeal(
+      deal_id: ID!
+      deal_name: String
+      stage: String
+      amount: Float
+      close_date: String
+      contact_id: ID
+      user_id: ID
+    ): Deal
+    deleteDeal(deal_id: ID!): Boolean
+
     addCampaign(
       campaign_name: String!
       start_date: String
@@ -353,6 +467,16 @@ export const typeDefs = gql`
       budget: Float
       status: String
     ): Campaign
+    updateCampaign(
+      campaign_id: ID!
+      campaign_name: String
+      start_date: String
+      end_date: String
+      budget: Float
+      status: String
+    ): Campaign
+    deleteCampaign(campaign_id: ID!): Boolean
+
     addEmail(
       campaign_id: ID
       subject: String!
@@ -362,6 +486,18 @@ export const typeDefs = gql`
       open_rate: Float
       click_through_rate: Float
     ): Email
+    updateEmail(
+      email_id: ID!
+      campaign_id: ID
+      subject: String
+      body: String
+      sent_date: String
+      recipient_count: Int
+      open_rate: Float
+      click_through_rate: Float
+    ): Email
+    deleteEmail(email_id: ID!): Boolean
+
     addSocialPost(
       campaign_id: ID
       platform: String!
@@ -371,6 +507,18 @@ export const typeDefs = gql`
       shares: Int
       comments: Int
     ): SocialPost
+    updateSocialPost(
+      post_id: ID!
+      campaign_id: ID
+      platform: String
+      content: String
+      post_date: String
+      likes: Int
+      shares: Int
+      comments: Int
+    ): SocialPost
+    deleteSocialPost(post_id: ID!): Boolean
+
     addTicket(
       subject: String!
       description: String
@@ -379,32 +527,84 @@ export const typeDefs = gql`
       contact_id: ID
       user_id: ID
     ): Ticket
+    updateTicket(
+      ticket_id: ID!
+      subject: String
+      description: String
+      status: String
+      priority: String
+      contact_id: ID
+      user_id: ID
+    ): Ticket
+    deleteTicket(ticket_id: ID!): Boolean
+
     addKnowledgeBaseArticle(
       title: String!
       content: String
       category: String
     ): KnowledgeBaseArticle
+    updateKnowledgeBaseArticle(
+      article_id: ID!
+      title: String
+      content: String
+      category: String
+    ): KnowledgeBaseArticle
+    deleteKnowledgeBaseArticle(article_id: ID!): Boolean
+
     addReport(
       report_name: String!
       report_type: String
       generated_date: String
       data: String
     ): Report
+    updateReport(
+      report_id: ID!
+      report_name: String
+      report_type: String
+      generated_date: String
+      data: String
+    ): Report
+    deleteReport(report_id: ID!): Boolean
+
     addDashboard(
       dashboard_name: String!
       layout: String
     ): Dashboard
+    updateDashboard(
+      dashboard_id: ID!
+      dashboard_name: String
+      layout: String
+    ): Dashboard
+    deleteDashboard(dashboard_id: ID!): Boolean
+
     addWorkflow(
       workflow_name: String!
       trigger_event: String
       is_active: Boolean
     ): Workflow
+    updateWorkflow(
+      workflow_id: ID!
+      workflow_name: String
+      trigger_event: String
+      is_active: Boolean
+    ): Workflow
+    deleteWorkflow(workflow_id: ID!): Boolean
+
     addWorkflowStep(
       workflow_id: ID!
       step_order: Int!
       action_type: String!
       action_details: String
     ): WorkflowStep
+    updateWorkflowStep(
+      step_id: ID!
+      workflow_id: ID
+      step_order: Int
+      action_type: String
+      action_details: String
+    ): WorkflowStep
+    deleteWorkflowStep(step_id: ID!): Boolean
+
     addCall(
       contact_id: ID
       user_id: ID
@@ -412,6 +612,16 @@ export const typeDefs = gql`
       duration_minutes: Int
       notes: String
     ): Call
+    updateCall(
+      call_id: ID!
+      contact_id: ID
+      user_id: ID
+      call_date: String
+      duration_minutes: Int
+      notes: String
+    ): Call
+    deleteCall(call_id: ID!): Boolean
+
     addMeeting(
       title: String!
       description: String
@@ -420,55 +630,144 @@ export const typeDefs = gql`
       contact_id: ID
       user_id: ID
     ): Meeting
+    updateMeeting(
+      meeting_id: ID!
+      title: String
+      description: String
+      meeting_date: String
+      location: String
+      contact_id: ID
+      user_id: ID
+    ): Meeting
+    deleteMeeting(meeting_id: ID!): Boolean
+
     addIntegration(
       integration_name: String!
       api_key: String
       status: String
     ): Integration
+    updateIntegration(
+      integration_id: ID!
+      integration_name: String
+      api_key: String
+      status: String
+    ): Integration
+    deleteIntegration(integration_id: ID!): Boolean
+
     addRole(
       role_name: String!
     ): Role
+    updateRole(
+      role_id: ID!
+      role_name: String
+    ): Role
+    deleteRole(role_id: ID!): Boolean
+
     addPermission(
       permission_name: String!
     ): Permission
+    updatePermission(
+      permission_id: ID!
+      permission_name: String
+    ): Permission
+    deletePermission(permission_id: ID!): Boolean
+
     addRolePermission(
       role_id: ID!
       permission_id: ID!
     ): Boolean
+    deleteRolePermission(
+      role_id: ID!
+      permission_id: ID!
+    ): Boolean
+
     addSharedCalendar(
       calendar_name: String!
       owner_user_id: ID
     ): SharedCalendar
+    updateSharedCalendar(
+      calendar_id: ID!
+      calendar_name: String
+      owner_user_id: ID
+    ): SharedCalendar
+    deleteSharedCalendar(calendar_id: ID!): Boolean
+
     addDocument(
       document_name: String!
       document_url: String!
       owner_user_id: ID
     ): Document
+    updateDocument(
+      document_id: ID!
+      document_name: String
+      document_url: String
+      owner_user_id: ID
+    ): Document
+    deleteDocument(document_id: ID!): Boolean
+
     addTeamMember(
       user_id: ID!
       team_role: String
     ): TeamMember
+    updateTeamMember(
+      user_id: ID!
+      team_role: String
+    ): TeamMember
+    deleteTeamMember(user_id: ID!): Boolean
+
     addAIModel(
       model_name: String!
       model_type: String
       description: String
     ): AIModel
+    updateAIModel(
+      model_id: ID!
+      model_name: String
+      model_type: String
+      description: String
+    ): AIModel
+    deleteAIModel(model_id: ID!): Boolean
+
     addPrediction(
       model_id: ID
       entity_type: String!
       entity_id: ID!
       predicted_value: String
     ): Prediction
+    updatePrediction(
+      prediction_id: ID!
+      model_id: ID
+      entity_type: String
+      entity_id: ID
+      predicted_value: String
+    ): Prediction
+    deletePrediction(prediction_id: ID!): Boolean
+
     addUserProfile(
       user_id: ID!
       bio: String
       profile_picture_url: String
       social_media_links: String
     ): UserProfile
+    updateUserProfile(
+      profile_id: ID!
+      user_id: ID
+      bio: String
+      profile_picture_url: String
+      social_media_links: String
+    ): UserProfile
+    deleteUserProfile(profile_id: ID!): Boolean
+
     addUserSetting(
       user_id: ID!
       settings: String
     ): UserSetting
+    updateUserSetting(
+      user_id: ID!
+      settings: String
+    ): UserSetting
+    deleteUserSetting(user_id: ID!): Boolean
+
     addAuditLog(
       user_id: ID
       action_type: String!
@@ -477,415 +776,240 @@ export const typeDefs = gql`
       old_value: String
       new_value: String
     ): AuditLog
+
     addQuote(
       deal_id: ID
       quote_date: String
       total_amount: Float
       status: String
     ): Quote
+    updateQuote(
+      quote_id: ID!
+      deal_id: ID
+      quote_date: String
+      total_amount: Float
+      status: String
+    ): Quote
+    deleteQuote(quote_id: ID!): Boolean
+
     addProposal(
       deal_id: ID
       proposal_date: String
       content: String
       status: String
     ): Proposal
+    updateProposal(
+      proposal_id: ID!
+      deal_id: ID
+      proposal_date: String
+      content: String
+      status: String
+    ): Proposal
+    deleteProposal(proposal_id: ID!): Boolean
+
     addTerritory(
       territory_name: String!
       region: String
       manager_user_id: ID
     ): Territory
+    updateTerritory(
+      territory_id: ID!
+      territory_name: String
+      region: String
+      manager_user_id: ID
+    ): Territory
+    deleteTerritory(territory_id: ID!): Boolean
+
     addTeamPerformance(
       user_id: ID
       metric_name: String!
       metric_value: Float
       record_date: String
     ): TeamPerformance
+    updateTeamPerformance(
+      performance_id: ID!
+      user_id: ID
+      metric_name: String
+      metric_value: Float
+      record_date: String
+    ): TeamPerformance
+    deleteTeamPerformance(performance_id: ID!): Boolean
+
     addCustomerLifetimeValue(
       contact_id: ID
       lifetime_value: Float
     ): CustomerLifetimeValue
+    updateCustomerLifetimeValue(
+      clv_id: ID!
+      contact_id: ID
+      lifetime_value: Float
+    ): CustomerLifetimeValue
+    deleteCustomerLifetimeValue(clv_id: ID!): Boolean
+
     addChurnPrediction(
       contact_id: ID
       churn_probability: Float
     ): ChurnPrediction
+    updateChurnPrediction(
+      churn_id: ID!
+      contact_id: ID
+      churn_probability: Float
+    ): ChurnPrediction
+    deleteChurnPrediction(churn_id: ID!): Boolean
+
     addCrossSellingOpportunity(
       contact_id: ID
       product_service: String
       likelihood: Float
     ): CrossSellingOpportunity
+    updateCrossSellingOpportunity(
+      opportunity_id: ID!
+      contact_id: ID
+      product_service: String
+      likelihood: Float
+    ): CrossSellingOpportunity
+    deleteCrossSellingOpportunity(opportunity_id: ID!): Boolean
+
     addMarketTrend(
       trend_name: String!
       description: String
       trend_date: String
       impact_score: Int
     ): MarketTrend
+    updateMarketTrend(
+      trend_id: ID!
+      trend_name: String
+      description: String
+      trend_date: String
+      impact_score: Int
+    ): MarketTrend
+    deleteMarketTrend(trend_id: ID!): Boolean
+
     addDataImport(
       file_name: String!
       file_type: String
       status: String
       imported_by: ID
     ): DataImport
+    updateDataImport(
+      import_id: ID!
+      file_name: String
+      file_type: String
+      status: String
+      imported_by: ID
+    ): DataImport
+    deleteDataImport(import_id: ID!): Boolean
+
     addDataExport(
       file_name: String!
       file_type: String
       status: String
       exported_by: ID
     ): DataExport
+    updateDataExport(
+      export_id: ID!
+      file_name: String
+      file_type: String
+      status: String
+      exported_by: ID
+    ): DataExport
+    deleteDataExport(export_id: ID!): Boolean
+
+    addUser(
+      username: String!
+      password_hash: String!
+      email: String!
+      full_name: String
+      role: String
+    ): User
+    updateUser(
+      user_id: ID!
+      username: String
+      password_hash: String
+      email: String
+      full_name: String
+      role: String
+    ): User
+    deleteUser(user_id: ID!): Boolean
   }
 `;
 
 export const resolvers = {
   Query: {
+    ...contactResolvers.Query,
+    ...leadResolvers.Query,
+    ...dealResolvers.Query,
+    ...campaignResolvers.Query,
+    ...emailResolvers.Query,
+    ...socialPostResolvers.Query,
+    ...ticketResolvers.Query,
+    ...knowledgeBaseArticleResolvers.Query,
+    ...reportResolvers.Query,
+    ...dashboardResolvers.Query,
+    ...workflowResolvers.Query,
+    ...workflowStepResolvers.Query,
+    ...callResolvers.Query,
+    ...meetingResolvers.Query,
+    ...integrationResolvers.Query,
+    ...roleResolvers.Query,
+    ...permissionResolvers.Query,
+    ...sharedCalendarResolvers.Query,
+    ...documentResolvers.Query,
+    ...teamMemberResolvers.Query,
+    ...aiModelResolvers.Query,
+    ...predictionResolvers.Query,
+    ...userProfileResolvers.Query,
+    ...userSettingResolvers.Query,
+    ...auditLogResolvers.Query,
+    ...quoteResolvers.Query,
+    ...proposalResolvers.Query,
+    ...territoryResolvers.Query,
+    ...teamPerformanceResolvers.Query,
+    ...customerLifetimeValueResolvers.Query,
+    ...churnPredictionResolvers.Query,
+    ...crossSellingOpportunityResolvers.Query,
+    ...marketTrendResolvers.Query,
+    ...dataImportResolvers.Query,
+    ...dataExportResolvers.Query,
+    ...userResolvers.Query,
     hello: () => 'Hello, world!',
-    contacts: async () => {
-      const { rows } = await pool.query('SELECT * FROM contacts');
-      return rows;
-    },
-    leads: async () => {
-      const { rows } = await pool.query('SELECT * FROM leads');
-      return rows;
-    },
-    deals: async () => {
-      const { rows } = await pool.query('SELECT * FROM deals');
-      return rows;
-    },
-    campaigns: async () => {
-      const { rows } = await pool.query('SELECT * FROM campaigns');
-      return rows;
-    },
-    emails: async () => {
-      const { rows } = await pool.query('SELECT * FROM emails');
-      return rows;
-    },
-    socialPosts: async () => {
-      const { rows } = await pool.query('SELECT * FROM social_posts');
-      return rows;
-    },
-    tickets: async () => {
-      const { rows } = await pool.query('SELECT * FROM tickets');
-      return rows;
-    },
-    knowledgeBaseArticles: async () => {
-      const { rows } = await pool.query('SELECT * FROM knowledge_base_articles');
-      return rows;
-    },
-    reports: async () => {
-      const { rows } = await pool.query('SELECT * FROM reports');
-      return rows;
-    },
-    dashboards: async () => {
-      const { rows } = await pool.query('SELECT * FROM dashboards');
-      return rows;
-    },
-    workflows: async () => {
-      const { rows } = await pool.query('SELECT * FROM workflows');
-      return rows;
-    },
-    workflowSteps: async () => {
-      const { rows } = await pool.query('SELECT * FROM workflow_steps');
-      return rows;
-    },
-    calls: async () => {
-      const { rows } = await pool.query('SELECT * FROM calls');
-      return rows;
-    },
-    meetings: async () => {
-      const { rows } = await pool.query('SELECT * FROM meetings');
-      return rows;
-    },
-    integrations: async () => {
-      const { rows } = await pool.query('SELECT * FROM integrations');
-      return rows;
-    },
-    roles: async () => {
-      const { rows } = await pool.query('SELECT * FROM roles');
-      return rows;
-    },
-    permissions: async () => {
-      const { rows } = await pool.query('SELECT * FROM permissions');
-      return rows;
-    },
-    sharedCalendars: async () => {
-      const { rows } = await pool.query('SELECT * FROM shared_calendars');
-      return rows;
-    },
-    documents: async () => {
-      const { rows } = await pool.query('SELECT * FROM documents');
-      return rows;
-    },
-    teamMembers: async () => {
-      const { rows } = await pool.query('SELECT * FROM team_members');
-      return rows;
-    },
-    aiModels: async () => {
-      const { rows } = await pool.query('SELECT * FROM ai_models');
-      return rows;
-    },
-    predictions: async () => {
-      const { rows } = await pool.query('SELECT * FROM predictions');
-      return rows;
-    },
-    userProfiles: async () => {
-      const { rows } = await pool.query('SELECT * FROM user_profiles');
-      return rows;
-    },
-    userSettings: async () => {
-      const { rows } = await pool.query('SELECT * FROM user_settings');
-      return rows;
-    },
-    auditLogs: async () => {
-      const { rows } = await pool.query('SELECT * FROM audit_logs');
-      return rows;
-    },
-    quotes: async () => {
-      const { rows } = await pool.query('SELECT * FROM quotes');
-      return rows;
-    },
-    proposals: async () => {
-      const { rows } = await pool.query('SELECT * FROM proposals');
-      return rows;
-    },
-    territories: async () => {
-      const { rows } = await pool.query('SELECT * FROM territories');
-      return rows;
-    },
-    teamPerformance: async () => {
-      const { rows } = await pool.query('SELECT * FROM team_performance');
-      return rows;
-    },
-    customerLifetimeValues: async () => {
-      const { rows } = await pool.query('SELECT * FROM customer_lifetime_value');
-      return rows;
-    },
-    churnPredictions: async () => {
-      const { rows } = await pool.query('SELECT * FROM churn_prediction');
-      return rows;
-    },
-    crossSellingOpportunities: async () => {
-      const { rows } = await pool.query('SELECT * FROM cross_selling_opportunities');
-      return rows;
-    },
-    marketTrends: async () => {
-      const { rows } = await pool.query('SELECT * FROM market_trends');
-      return rows;
-    },
-    dataImports: async () => {
-      const { rows } = await pool.query('SELECT * FROM data_imports');
-      return rows;
-    },
-    dataExports: async () => {
-      const { rows } = await pool.query('SELECT * FROM data_exports');
-      return rows;
-    },
   },
   Mutation: {
-    addContact: async (_: any, args: any) => {
-      const { first_name, last_name, email, phone_number, company, job_title } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO contacts (first_name, last_name, email, phone_number, company, job_title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [first_name, last_name, email, phone_number, company, job_title]
-      );
-      return rows[0];
-    },
-    addLead: async (_: any, args: any) => {
-      const { first_name, last_name, email, company, status, source } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO leads (first_name, last_name, email, company, status, source) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [first_name, last_name, email, company, status, source]
-      );
-      return rows[0];
-    },
-    addDeal: async (_: any, args: any) => {
-      const { deal_name, stage, amount, close_date, contact_id, user_id } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO deals (deal_name, stage, amount, close_date, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [deal_name, stage, amount, close_date, contact_id, user_id]
-      );
-      return rows[0];
-    },
-    addCampaign: async (_: any, args: any) => {
-      const { campaign_name, start_date, end_date, budget, status } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO campaigns (campaign_name, start_date, end_date, budget, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [campaign_name, start_date, end_date, budget, status]
-      );
-      return rows[0];
-    },
-    addEmail: async (_: any, args: any) => {
-      const { campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO emails (campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate]
-      );
-      return rows[0];
-    },
-    addSocialPost: async (_: any, args: any) => {
-      const { campaign_id, platform, content, post_date, likes, shares, comments } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO social_posts (campaign_id, platform, content, post_date, likes, shares, comments) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [campaign_id, platform, content, post_date, likes, shares, comments]
-      );
-      return rows[0];
-    },
-    addTicket: async (_: any, args: any) => {
-      const { subject, description, status, priority, contact_id, user_id } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO tickets (subject, description, status, priority, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [subject, description, status, priority, contact_id, user_id]
-      );
-      return rows[0];
-    },
-    addKnowledgeBaseArticle: async (_: any, args: any) => {
-      const { title, content, category } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO knowledge_base_articles (title, content, category) VALUES ($1, $2, $3) RETURNING *',
-        [title, content, category]
-      );
-      return rows[0];
-    },
-    addReport: async (_: any, args: any) => {
-      const { report_name, report_type, generated_date, data } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO reports (report_name, report_type, generated_date, data) VALUES ($1, $2, $3, $4) RETURNING *',
-        [report_name, report_type, generated_date, data]
-      );
-      return rows[0];
-    },
-    addDashboard: async (_: any, args: any) => {
-      const { dashboard_name, layout } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO dashboards (dashboard_name, layout) VALUES ($1, $2) RETURNING *',
-        [dashboard_name, layout]
-      );
-      return rows[0];
-    },
-    addWorkflow: async (_: any, args: any) => {
-      const { workflow_name, trigger_event, is_active } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO workflows (workflow_name, trigger_event, is_active) VALUES ($1, $2, $3) RETURNING *',
-        [workflow_name, trigger_event, is_active]
-      );
-      return rows[0];
-    },
-    addWorkflowStep: async (_: any, args: any) => {
-      const { workflow_id, step_order, action_type, action_details } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO workflow_steps (workflow_id, step_order, action_type, action_details) VALUES ($1, $2, $3, $4) RETURNING *',
-        [workflow_id, step_order, action_type, action_details]
-      );
-      return rows[0];
-    },
-    addCall: async (_: any, args: any) => {
-      const { contact_id, user_id, call_date, duration_minutes, notes } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO calls (contact_id, user_id, call_date, duration_minutes, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [contact_id, user_id, call_date, duration_minutes, notes]
-      );
-      return rows[0];
-    },
-    addMeeting: async (_: any, args: any) => {
-      const { title, description, meeting_date, location, contact_id, user_id } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO meetings (title, description, meeting_date, location, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [title, description, meeting_date, location, contact_id, user_id]
-      );
-      return rows[0];
-    },
-    addIntegration: async (_: any, args: any) => {
-      const { integration_name, api_key, status } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO integrations (integration_name, api_key, status) VALUES ($1, $2, $3) RETURNING *',
-        [integration_name, api_key, status]
-      );
-      return rows[0];
-    },
-    addRole: async (_: any, args: any) => {
-      const { role_name } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO roles (role_name) VALUES ($1) RETURNING *',
-        [role_name]
-      );
-      return rows[0];
-    },
-    addPermission: async (_: any, args: any) => {
-      const { permission_name } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO permissions (permission_name) VALUES ($1) RETURNING *',
-        [permission_name]
-      );
-      return rows[0];
-    },
-    addRolePermission: async (_: any, args: any) => {
-      const { role_id, permission_id } = args;
-      await pool.query(
-        'INSERT INTO role_permissions (role_id, permission_id) VALUES ($1, $2)',
-        [role_id, permission_id]
-      );
-      return true;
-    },
-    addSharedCalendar: async (_: any, args: any) => {
-      const { calendar_name, owner_user_id } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO shared_calendars (calendar_name, owner_user_id) VALUES ($1, $2) RETURNING *',
-        [calendar_name, owner_user_id]
-      );
-      return rows[0];
-    },
-    addDocument: async (_: any, args: any) => {
-      const { document_name, document_url, owner_user_id } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO documents (document_name, document_url, owner_user_id) VALUES ($1, $2, $3) RETURNING *',
-        [document_name, document_url, owner_user_id]
-      );
-      return rows[0];
-    },
-    addTeamMember: async (_: any, args: any) => {
-      const { user_id, team_role } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO team_members (user_id, team_role) VALUES ($1, $2) RETURNING *',
-        [user_id, team_role]
-      );
-      return rows[0];
-    },
-    addAIModel: async (_: any, args: any) => {
-      const { model_name, model_type, description } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO ai_models (model_name, model_type, description) VALUES ($1, $2, $3) RETURNING *',
-        [model_name, model_type, description]
-      );
-      return rows[0];
-    },
-    addPrediction: async (_: any, args: any) => {
-      const { model_id, entity_type, entity_id, predicted_value } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO predictions (model_id, entity_type, entity_id, predicted_value) VALUES ($1, $2, $3, $4) RETURNING *',
-        [model_id, entity_type, entity_id, predicted_value]
-      );
-      return rows[0];
-    },
-    addUserProfile: async (_: any, args: any) => {
-      const { user_id, bio, profile_picture_url, social_media_links } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO user_profiles (user_id, bio, profile_picture_url, social_media_links) VALUES ($1, $2, $3, $4) RETURNING *',
-        [user_id, bio, profile_picture_url, social_media_links]
-      );
-      return rows[0];
-    },
-    addUserSetting: async (_: any, args: any) => {
-      const { user_id, settings } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO user_settings (user_id, settings) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET settings = EXCLUDED.settings RETURNING *',
-        [user_id, settings]
-      );
-      return rows[0];
-    },
-    addAuditLog: async (_: any, args: any) => {
-      const { user_id, action_type, entity_type, entity_id, old_value, new_value } = args;
-      const { rows } = await pool.query(
-        'INSERT INTO audit_logs (user_id, action_type, entity_type, entity_id, old_value, new_value) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [user_id, action_type, entity_type, entity_id, old_value, new_value]
-      );
-      return rows[0];
-    },
+    ...contactResolvers.Mutation,
+    ...leadResolvers.Mutation,
+    ...dealResolvers.Mutation,
+    ...campaignResolvers.Mutation,
+    ...emailResolvers.Mutation,
+    ...socialPostResolvers.Mutation,
+    ...ticketResolvers.Mutation,
+    ...knowledgeBaseArticleResolvers.Mutation,
+    ...reportResolvers.Mutation,
+    ...dashboardResolvers.Mutation,
+    ...workflowResolvers.Mutation,
+    ...workflowStepResolvers.Mutation,
+    ...callResolvers.Mutation,
+    ...meetingResolvers.Mutation,
+    ...integrationResolvers.Mutation,
+    ...roleResolvers.Mutation,
+    ...permissionResolvers.Mutation,
+    ...sharedCalendarResolvers.Mutation,
+    ...documentResolvers.Mutation,
+    ...teamMemberResolvers.Mutation,
+    ...aiModelResolvers.Mutation,
+    ...predictionResolvers.Mutation,
+    ...userProfileResolvers.Mutation,
+    ...userSettingResolvers.Mutation,
+    ...auditLogResolvers.Mutation,
+    ...quoteResolvers.Mutation,
+    ...proposalResolvers.Mutation,
+    ...territoryResolvers.Mutation,
+    ...teamPerformanceResolvers.Mutation,
+    ...customerLifetimeValueResolvers.Mutation,
+    ...churnPredictionResolvers.Mutation,
+    ...crossSellingOpportunityResolvers.Mutation,
+    ...marketTrendResolvers.Mutation,
+    ...dataImportResolvers.Mutation,
+    ...dataExportResolvers.Mutation,
+    ...userResolvers.Mutation,
   },
 };
