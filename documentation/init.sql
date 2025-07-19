@@ -188,3 +188,26 @@ CREATE TABLE IF NOT EXISTS workflow_steps (
     action_details JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: calls
+CREATE TABLE IF NOT EXISTS calls (
+    call_id SERIAL PRIMARY KEY,
+    contact_id INT REFERENCES contacts(contact_id),
+    user_id INT REFERENCES users(user_id),
+    call_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    duration_minutes INT,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: meetings
+CREATE TABLE IF NOT EXISTS meetings (
+    meeting_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    meeting_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    location VARCHAR(255),
+    contact_id INT REFERENCES contacts(contact_id),
+    user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

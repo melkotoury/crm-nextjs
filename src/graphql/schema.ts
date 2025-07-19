@@ -94,131 +94,6 @@ export const typeDefs = gql`
     layout: String
   }
 
-  type Query {
-    hello: String
-    contacts: [Contact]
-    leads: [Lead]
-    deals: [Deal]
-    campaigns: [Campaign]
-    emails: [Email]
-    socialPosts: [SocialPost]
-    tickets: [Ticket]
-    knowledgeBaseArticles: [KnowledgeBaseArticle]
-    reports: [Report]
-    dashboards: [Dashboard]
-  }
-
-  type Mutation {
-    addContact(
-      first_name: String!
-      last_name: String!
-      email: String!
-      phone_number: String
-      company: String
-      job_title: String
-    ): Contact
-    addLead(
-      first_name: String!
-      last_name: String!
-      email: String!
-      company: String
-      status: String!
-      source: String
-    ): Lead
-    addDeal(
-      deal_name: String!
-      stage: String!
-      amount: Float
-      close_date: String
-      contact_id: ID
-      user_id: ID
-    ): Deal
-    addCampaign(
-      campaign_name: String!
-      start_date: String
-      end_date: String
-      budget: Float
-      status: String
-    ): Campaign
-    addEmail(
-      campaign_id: ID
-      subject: String!
-      body: String
-      sent_date: String
-      recipient_count: Int
-      open_rate: Float
-      click_through_rate: Float
-    ): Email
-    addSocialPost(
-      campaign_id: ID
-      platform: String!
-      content: String!
-      post_date: String
-      likes: Int
-      shares: Int
-      comments: Int
-    ): SocialPost
-    addTicket(
-      subject: String!
-      description: String
-      status: String
-      priority: String
-      contact_id: ID
-      user_id: ID
-    ): Ticket
-    addKnowledgeBaseArticle(
-      title: String!
-      content: String
-      category: String
-    ): KnowledgeBaseArticle
-    addReport(
-      report_name: String!
-      report_type: String
-      generated_date: String
-      data: String
-    ): Report
-    type SocialPost {
-    post_id: ID!
-    campaign_id: ID
-    platform: String!
-    content: String!
-    post_date: String
-    likes: Int
-    shares: Int
-    comments: Int
-  }
-
-  type Ticket {
-    ticket_id: ID!
-    subject: String!
-    description: String
-    status: String
-    priority: String
-    contact_id: ID
-    user_id: ID
-  }
-
-  type KnowledgeBaseArticle {
-    article_id: ID!
-    title: String!
-    content: String
-    category: String
-  }
-
-  type Report {
-    report_id: ID!
-    report_name: String!
-    report_type: String
-    generated_date: String
-    data: String
-  }
-
-  type Dashboard {
-    dashboard_id: ID!
-    dashboard_name: String!
-    layout: String
-  }
-
   type Workflow {
     workflow_id: ID!
     workflow_name: String!
@@ -232,6 +107,25 @@ export const typeDefs = gql`
     step_order: Int!
     action_type: String!
     action_details: String
+  }
+
+  type Call {
+    call_id: ID!
+    contact_id: ID
+    user_id: ID
+    call_date: String!
+    duration_minutes: Int
+    notes: String
+  }
+
+  type Meeting {
+    meeting_id: ID!
+    title: String!
+    description: String
+    meeting_date: String!
+    location: String
+    contact_id: ID
+    user_id: ID
   }
 
   type Query {
@@ -248,6 +142,8 @@ export const typeDefs = gql`
     dashboards: [Dashboard]
     workflows: [Workflow]
     workflowSteps: [WorkflowStep]
+    calls: [Call]
+    meetings: [Meeting]
   }
 
   type Mutation {
@@ -334,6 +230,21 @@ export const typeDefs = gql`
       action_type: String!
       action_details: String
     ): WorkflowStep
+    addCall(
+      contact_id: ID
+      user_id: ID
+      call_date: String!
+      duration_minutes: Int
+      notes: String
+    ): Call
+    addMeeting(
+      title: String!
+      description: String
+      meeting_date: String!
+      location: String
+      contact_id: ID
+      user_id: ID
+    ): Meeting
   }
 `;
 
@@ -386,6 +297,14 @@ export const resolvers = {
     },
     workflowSteps: async () => {
       const { rows } = await pool.query('SELECT * FROM workflow_steps');
+      return rows;
+    },
+    calls: async () => {
+      const { rows } = await pool.query('SELECT * FROM calls');
+      return rows;
+    },
+    meetings: async () => {
+      const { rows } = await pool.query('SELECT * FROM meetings');
       return rows;
     },
   },
@@ -467,6 +386,38 @@ export const resolvers = {
       const { rows } = await pool.query(
         'INSERT INTO dashboards (dashboard_name, layout) VALUES ($1, $2) RETURNING *',
         [dashboard_name, layout]
+      );
+      return rows[0];
+    },
+    addWorkflow: async (_: any, args: any) => {
+      const { workflow_name, trigger_event, is_active } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO workflows (workflow_name, trigger_event, is_active) VALUES ($1, $2, $3) RETURNING *',
+        [workflow_name, trigger_event, is_active]
+      );
+      return rows[0];
+    },
+    addWorkflowStep: async (_: any, args: any) => {
+      const { workflow_id, step_order, action_type, action_details } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO workflow_steps (workflow_id, step_order, action_type, action_details) VALUES ($1, $2, $3, $4) RETURNING *',
+        [workflow_id, step_order, action_type, action_details]
+      );
+      return rows[0];
+    },
+    addCall: async (_: any, args: any) => {
+      const { contact_id, user_id, call_date, duration_minutes, notes } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO calls (contact_id, user_id, call_date, duration_minutes, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [contact_id, user_id, call_date, duration_minutes, notes]
+      );
+      return rows[0];
+    },
+    addMeeting: async (_: any, args: any) => {
+      const { title, description, meeting_date, location, contact_id, user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO meetings (title, description, meeting_date, location, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [title, description, meeting_date, location, contact_id, user_id]
       );
       return rows[0];
     },
