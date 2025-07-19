@@ -34,6 +34,8 @@ export default function RootLayout({
               <Link href="/quotes-proposals" className="text-gray-300 hover:text-white mr-4">Quotes & Proposals</Link>
               <Link href="/territory-team" className="text-gray-300 hover:text-white">Territory & Team</Link>
               <Link href="/user-profiles" className="text-gray-300 hover:text-white mr-4">User Profiles</Link>
+              <Link href="/data-management" className="text-gray-300 hover:text-white">Data Management</Link>
+              <Link href="/data-management" className="text-gray-300 hover:text-white">Data Management</Link>
               <Link href="/collaboration" className="text-gray-300 hover:text-white mr-4">Collaboration</Link>
               <Link href="/roles-permissions" className="text-gray-300 hover:text-white mr-4">Roles & Permissions</Link>
               <Link href="/integrations" className="text-gray-300 hover:text-white">Integrations</Link>

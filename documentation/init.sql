@@ -283,49 +283,6 @@ CREATE TABLE IF NOT EXISTS documents (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: user_profiles
-CREATE TABLE IF NOT EXISTS user_profiles (
-    profile_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) UNIQUE,
-    bio TEXT,
-    profile_picture_url TEXT,
-    social_media_links JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: audit_logs
-CREATE TABLE IF NOT EXISTS audit_logs (
-    log_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id),
-    action_type VARCHAR(255) NOT NULL,
-    entity_type VARCHAR(255),
-    entity_id INT,
-    old_value JSONB,
-    new_value JSONB,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: ai_models
-CREATE TABLE IF NOT EXISTS ai_models (
-    model_id SERIAL PRIMARY KEY,
-    model_name VARCHAR(255) NOT NULL,
-    model_type VARCHAR(100),
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: predictions
-CREATE TABLE IF NOT EXISTS predictions (
-    prediction_id SERIAL PRIMARY KEY,
-    model_id INT REFERENCES ai_models(model_id),
-    entity_type VARCHAR(255) NOT NULL,
-    entity_id INT NOT NULL,
-    predicted_value TEXT,
-    prediction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Table: quotes
 CREATE TABLE IF NOT EXISTS quotes (
     quote_id SERIAL PRIMARY KEY,
@@ -412,4 +369,24 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     social_media_links JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: data_imports
+CREATE TABLE IF NOT EXISTS data_imports (
+    import_id SERIAL PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    status VARCHAR(50),
+    imported_by INT REFERENCES users(user_id),
+    imported_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: data_exports
+CREATE TABLE IF NOT EXISTS data_exports (
+    export_id SERIAL PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    status VARCHAR(50),
+    exported_by INT REFERENCES users(user_id),
+    exported_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

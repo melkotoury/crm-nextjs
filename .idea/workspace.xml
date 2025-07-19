@@ -36,7 +36,7 @@
     "nodejs_package_manager_path": "pnpm",
     "prettierjs.PrettierConfiguration.Package": "/Users/melkotoury/Study/playground/crm-nextjs/node_modules/prettier",
     "settings.editor.selected.configurable": "preferences.pluginManager",
-    "ts.external.directory.path": "/Users/melkotoury/Study/playground/crm-nextjs/node_modules/typescript/lib",
+    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
