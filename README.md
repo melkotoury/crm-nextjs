@@ -1,59 +1,36 @@
-# Professional CRM
-
-A comprehensive CRM solution built with Next.js, Docker, GraphQL, and PostgreSQL.
-
-## Technical Stack
-
-*   **Frontend:** Next.js 14 (with TypeScript, Tailwind CSS)
-*   **Backend:** Node.js (v22 LTS)
-*   **API:** GraphQL
-*   **Database:** PostgreSQL (latest)
-*   **Containerization:** Docker
-
-## Features
-
-This CRM includes a wide range of features to manage customer relationships, sales, and marketing efforts effectively. Key features include:
-
-*   **Contact Management:** Comprehensive contact profiles, segmentation, and lead tracking.
-*   **Sales Force Automation:** Lead and opportunity management, sales activity tracking, and pipeline management.
-*   **Pipeline Management:** Visual sales pipeline, deal progression tracking, and revenue forecasting.
-*   **Marketing Automation:** Email marketing, lead nurturing, and campaign analytics.
-*   **Customer Service and Support:** Ticketing system, knowledge base, and live chat.
-*   **Analytics and Reporting:** Customizable dashboards, sales forecasting, and BI tool integration.
-*   **Workflow Automation:** Lead assignment, task automation, and approval workflows.
-*   **Communication Tracking:** Email integration, call logging, and meeting scheduling.
-*   **Integration Capabilities:** Open API, pre-built integrations, and ERP system connectivity.
-*   **Mobile Functionality:** Native iOS and Android apps with offline access.
-*   **Customization and Scalability:** Custom fields, role-based permissions, and multi-language support.
-*   **Collaboration Tools:** Shared calendars, internal chat, and document sharing.
-*   **Security and Compliance:** Data encryption, GDPR compliance, and SSO integration.
-*   **AI and Machine Learning:** AI-powered lead scoring, predictive analytics, and chatbots.
-*   **Territory and Team Management:** Sales territory mapping, team hierarchy, and performance tracking.
-*   **Advanced Analytics and Insights:** Customer lifetime value, churn prediction, cross-selling opportunities, and market trend analysis.
-*   **User Profiles:** Customizable user profiles with bios, profile pictures, and social media links.
-*   **Data Management:** Comprehensive data import/export capabilities, deduplication, and cleansing tools.
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-To get the application up and running, follow these steps:
+First, run the development server:
 
-1.  **Clone the repository:**
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-    ```bash
-    git clone https://github.com/your-username/professional-crm.git
-    cd professional-crm
-    ```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-2.  **Start the application:**
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-    ```bash
-    docker-compose up -d
-    ```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-3.  **Access the application:**
+## Learn More
 
-    Open your browser and navigate to `http://localhost:3000`.
+To learn more about Next.js, take a look at the following resources:
 
-## Documentation
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-For detailed information about the project, including UML diagrams, ERD, and API documentation, please refer to the `documentation` folder.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
