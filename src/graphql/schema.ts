@@ -180,6 +180,90 @@ export const typeDefs = gql`
     prediction_date: String
   }
 
+  type UserProfile {
+    profile_id: ID!
+    user_id: ID!
+    bio: String
+    profile_picture_url: String
+    social_media_links: String
+  }
+
+  type UserSetting {
+    user_id: ID!
+    settings: String
+  }
+
+  type AuditLog {
+    log_id: ID!
+    user_id: ID
+    action_type: String!
+    entity_type: String
+    entity_id: ID
+    old_value: String
+    new_value: String
+    timestamp: String
+  }
+
+  type Quote {
+    quote_id: ID!
+    deal_id: ID
+    quote_date: String
+    total_amount: Float
+    status: String
+  }
+
+  type Proposal {
+    proposal_id: ID!
+    deal_id: ID
+    proposal_date: String
+    content: String
+    status: String
+  }
+
+  type Territory {
+    territory_id: ID!
+    territory_name: String!
+    region: String
+    manager_user_id: ID
+  }
+
+  type TeamPerformance {
+    performance_id: ID!
+    user_id: ID
+    metric_name: String!
+    metric_value: Float
+    record_date: String
+  }
+
+  type CustomerLifetimeValue {
+    clv_id: ID!
+    contact_id: ID
+    lifetime_value: Float
+    calculation_date: String
+  }
+
+  type ChurnPrediction {
+    churn_id: ID!
+    contact_id: ID
+    churn_probability: Float
+    prediction_date: String
+  }
+
+  type CrossSellingOpportunity {
+    opportunity_id: ID!
+    contact_id: ID
+    product_service: String
+    likelihood: Float
+  }
+
+  type MarketTrend {
+    trend_id: ID!
+    trend_name: String!
+    description: String
+    trend_date: String
+    impact_score: Int
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -204,6 +288,17 @@ export const typeDefs = gql`
     teamMembers: [TeamMember]
     aiModels: [AIModel]
     predictions: [Prediction]
+    userProfiles: [UserProfile]
+    userSettings: [UserSetting]
+    auditLogs: [AuditLog]
+    quotes: [Quote]
+    proposals: [Proposal]
+    territories: [Territory]
+    teamPerformance: [TeamPerformance]
+    customerLifetimeValues: [CustomerLifetimeValue]
+    churnPredictions: [ChurnPrediction]
+    crossSellingOpportunities: [CrossSellingOpportunity]
+    marketTrends: [MarketTrend]
   }
 
   type Mutation {
@@ -344,6 +439,24 @@ export const typeDefs = gql`
       entity_id: ID!
       predicted_value: String
     ): Prediction
+    addUserProfile(
+      user_id: ID!
+      bio: String
+      profile_picture_url: String
+      social_media_links: String
+    ): UserProfile
+    addUserSetting(
+      user_id: ID!
+      settings: String
+    ): UserSetting
+    addAuditLog(
+      user_id: ID
+      action_type: String!
+      entity_type: String
+      entity_id: ID
+      old_value: String
+      new_value: String
+    ): AuditLog
   }
 `;
 
@@ -430,6 +543,26 @@ export const resolvers = {
       const { rows } = await pool.query('SELECT * FROM team_members');
       return rows;
     },
+    aiModels: async () => {
+      const { rows } = await pool.query('SELECT * FROM ai_models');
+      return rows;
+    },
+    predictions: async () => {
+      const { rows } = await pool.query('SELECT * FROM predictions');
+      return rows;
+    },
+    userProfiles: async () => {
+      const { rows } = await pool.query('SELECT * FROM user_profiles');
+      return rows;
+    },
+    userSettings: async () => {
+      const { rows } = await pool.query('SELECT * FROM user_settings');
+      return rows;
+    },
+    auditLogs: async () => {
+      const { rows } = await pool.query('SELECT * FROM audit_logs');
+      return rows;
+    },
   },
   Mutation: {
     addContact: async (_: any, args: any) => {
@@ -552,133 +685,96 @@ export const resolvers = {
       );
       return rows[0];
     },
+    addRole: async (_: any, args: any) => {
+      const { role_name } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO roles (role_name) VALUES ($1) RETURNING *',
+        [role_name]
+      );
+      return rows[0];
+    },
+    addPermission: async (_: any, args: any) => {
+      const { permission_name } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO permissions (permission_name) VALUES ($1) RETURNING *',
+        [permission_name]
+      );
+      return rows[0];
+    },
+    addRolePermission: async (_: any, args: any) => {
+      const { role_id, permission_id } = args;
+      await pool.query(
+        'INSERT INTO role_permissions (role_id, permission_id) VALUES ($1, $2)',
+        [role_id, permission_id]
+      );
+      return true;
+    },
+    addSharedCalendar: async (_: any, args: any) => {
+      const { calendar_name, owner_user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO shared_calendars (calendar_name, owner_user_id) VALUES ($1, $2) RETURNING *',
+        [calendar_name, owner_user_id]
+      );
+      return rows[0];
+    },
+    addDocument: async (_: any, args: any) => {
+      const { document_name, document_url, owner_user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO documents (document_name, document_url, owner_user_id) VALUES ($1, $2, $3) RETURNING *',
+        [document_name, document_url, owner_user_id]
+      );
+      return rows[0];
+    },
+    addTeamMember: async (_: any, args: any) => {
+      const { user_id, team_role } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO team_members (user_id, team_role) VALUES ($1, $2) RETURNING *',
+        [user_id, team_role]
+      );
+      return rows[0];
+    },
+    addAIModel: async (_: any, args: any) => {
+      const { model_name, model_type, description } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO ai_models (model_name, model_type, description) VALUES ($1, $2, $3) RETURNING *',
+        [model_name, model_type, description]
+      );
+      return rows[0];
+    },
+    addPrediction: async (_: any, args: any) => {
+      const { model_id, entity_type, entity_id, predicted_value } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO predictions (model_id, entity_type, entity_id, predicted_value) VALUES ($1, $2, $3, $4) RETURNING *',
+        [model_id, entity_type, entity_id, predicted_value]
+      );
+      return rows[0];
+    },
+    addUserProfile: async (_: any, args: any) => {
+      const { user_id, bio, profile_picture_url, social_media_links } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO user_profiles (user_id, bio, profile_picture_url, social_media_links) VALUES ($1, $2, $3, $4) RETURNING *',
+        [user_id, bio, profile_picture_url, social_media_links]
+      );
+      return rows[0];
+    },
+    addUserSetting: async (_: any, args: any) => {
+      const { user_id, settings } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO user_settings (user_id, settings) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET settings = EXCLUDED.settings RETURNING *',
+        [user_id, settings]
+      );
+      return rows[0];
+    },
+    addAuditLog: async (_: any, args: any) => {
+      const { user_id, action_type, entity_type, entity_id, old_value, new_value } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO audit_logs (user_id, action_type, entity_type, entity_id, old_value, new_value) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [user_id, action_type, entity_type, entity_id, old_value, new_value]
+      );
+      return rows[0];
+    },
   },
 };
-
-  type Query {
-    hello: String
-    contacts: [Contact]
-    leads: [Lead]
-    deals: [Deal]
-    campaigns: [Campaign]
-    emails: [Email]
-    socialPosts: [SocialPost]
-    tickets: [Ticket]
-    knowledgeBaseArticles: [KnowledgeBaseArticle]
-    reports: [Report]
-    dashboards: [Dashboard]
-    workflows: [Workflow]
-    workflowSteps: [WorkflowStep]
-    calls: [Call]
-    meetings: [Meeting]
-    integrations: [Integration]
-  }
-
-  type Mutation {
-    addContact(
-      first_name: String!
-      last_name: String!
-      email: String!
-      phone_number: String
-      company: String
-      job_title: String
-    ): Contact
-    addLead(
-      first_name: String!
-      last_name: String!
-      email: String!
-      company: String
-      status: String!
-      source: String
-    ): Lead
-    addDeal(
-      deal_name: String!
-      stage: String!
-      amount: Float
-      close_date: String
-      contact_id: ID
-      user_id: ID
-    ): Deal
-    addCampaign(
-      campaign_name: String!
-      start_date: String
-      end_date: String
-      budget: Float
-      status: String
-    ): Campaign
-    addEmail(
-      campaign_id: ID
-      subject: String!
-      body: String
-      sent_date: String
-      recipient_count: Int
-      open_rate: Float
-      click_through_rate: Float
-    ): Email
-    addSocialPost(
-      campaign_id: ID
-      platform: String!
-      content: String!
-      post_date: String
-      likes: Int
-      shares: Int
-      comments: Int
-    ): SocialPost
-    addTicket(
-      subject: String!
-      description: String
-      status: String
-      priority: String
-      contact_id: ID
-      user_id: ID
-    ): Ticket
-    addKnowledgeBaseArticle(
-      title: String!
-      content: String
-      category: String
-    ): KnowledgeBaseArticle
-    addReport(
-      report_name: String!
-      report_type: String
-      generated_date: String
-      data: String
-    ): Report
-    addDashboard(
-      dashboard_name: String!
-      layout: String
-    ): Dashboard
-    addWorkflow(
-      workflow_name: String!
-      trigger_event: String
-      is_active: Boolean
-    ): Workflow
-    addWorkflowStep(
-      workflow_id: ID!
-      step_order: Int!
-      action_type: String!
-      action_details: String
-    ): WorkflowStep
-    addCall(
-      contact_id: ID
-      user_id: ID
-      call_date: String!
-      duration_minutes: Int
-      notes: String
-    ): Call
-    addMeeting(
-      title: String!
-      description: String
-      meeting_date: String!
-      location: String
-      contact_id: ID
-      user_id: ID
-    ): Meeting
-    addIntegration(
-      integration_name: String!
-      api_key: String
-      status: String
-    ): Integration
-  }
 `;
 
 export const resolvers = {
@@ -744,6 +840,46 @@ export const resolvers = {
       const { rows } = await pool.query('SELECT * FROM integrations');
       return rows;
     },
+    roles: async () => {
+      const { rows } = await pool.query('SELECT * FROM roles');
+      return rows;
+    },
+    permissions: async () => {
+      const { rows } = await pool.query('SELECT * FROM permissions');
+      return rows;
+    },
+    sharedCalendars: async () => {
+      const { rows } = await pool.query('SELECT * FROM shared_calendars');
+      return rows;
+    },
+    documents: async () => {
+      const { rows } = await pool.query('SELECT * FROM documents');
+      return rows;
+    },
+    teamMembers: async () => {
+      const { rows } = await pool.query('SELECT * FROM team_members');
+      return rows;
+    },
+    aiModels: async () => {
+      const { rows } = await pool.query('SELECT * FROM ai_models');
+      return rows;
+    },
+    predictions: async () => {
+      const { rows } = await pool.query('SELECT * FROM predictions');
+      return rows;
+    },
+    userProfiles: async () => {
+      const { rows } = await pool.query('SELECT * FROM user_profiles');
+      return rows;
+    },
+    userSettings: async () => {
+      const { rows } = await pool.query('SELECT * FROM user_settings');
+      return rows;
+    },
+    auditLogs: async () => {
+      const { rows } = await pool.query('SELECT * FROM audit_logs');
+      return rows;
+    },
   },
   Mutation: {
     addContact: async (_: any, args: any) => {
@@ -863,6 +999,102 @@ export const resolvers = {
       const { rows } = await pool.query(
         'INSERT INTO integrations (integration_name, api_key, status) VALUES ($1, $2, $3) RETURNING *',
         [integration_name, api_key, status]
+      );
+      return rows[0];
+    },
+    addRole: async (_: any, args: any) => {
+      const { role_name } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO roles (role_name) VALUES ($1) RETURNING *',
+        [role_name]
+      );
+      return rows[0];
+    },
+    addPermission: async (_: any, args: any) => {
+      const { permission_name } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO permissions (permission_name) VALUES ($1) RETURNING *',
+        [permission_name]
+      );
+      return rows[0];
+    },
+    addRolePermission: async (_: any, args: any) => {
+      const { role_id, permission_id } = args;
+      await pool.query(
+        'INSERT INTO role_permissions (role_id, permission_id) VALUES ($1, $2)',
+        [role_id, permission_id]
+      );
+      return true;
+    },
+    addSharedCalendar: async (_: any, args: any) => {
+      const { calendar_name, owner_user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO shared_calendars (calendar_name, owner_user_id) VALUES ($1, $2) RETURNING *',
+        [calendar_name, owner_user_id]
+      );
+      return rows[0];
+    },
+    addDocument: async (_: any, args: any) => {
+      const { document_name, document_url, owner_user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO documents (document_name, document_url, owner_user_id) VALUES ($1, $2, $3) RETURNING *',
+        [document_name, document_url, owner_user_id]
+      );
+      return rows[0];
+    },
+    addTeamMember: async (_: any, args: any) => {
+      const { user_id, team_role } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO team_members (user_id, team_role) VALUES ($1, $2) RETURNING *',
+        [user_id, team_role]
+      );
+      return rows[0];
+    },
+    addAIModel: async (_: any, args: any) => {
+      const { model_name, model_type, description } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO ai_models (model_name, model_type, description) VALUES ($1, $2, $3) RETURNING *',
+        [model_name, model_type, description]
+      );
+      return rows[0];
+    },
+    addPrediction: async (_: any, args: any) => {
+      const { model_id, entity_type, entity_id, predicted_value } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO predictions (model_id, entity_type, entity_id, predicted_value) VALUES ($1, $2, $3, $4) RETURNING *',
+        [model_id, entity_type, entity_id, predicted_value]
+      );
+      return rows[0];
+    },
+    addUser: async (_: any, args: any) => {
+      const { username, password_hash, email, full_name, role, role_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO users (username, password_hash, email, full_name, role, role_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [username, password_hash, email, full_name, role, role_id]
+      );
+      return rows[0];
+    },
+    updateUserRole: async (_: any, args: any) => {
+      const { user_id, role_id } = args;
+      const { rows } = await pool.query(
+        'UPDATE users SET role_id = $1 WHERE user_id = $2 RETURNING *',
+        [role_id, user_id]
+      );
+      return rows[0];
+    },
+    addUserSetting: async (_: any, args: any) => {
+      const { user_id, settings } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO user_settings (user_id, settings) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET settings = EXCLUDED.settings RETURNING *',
+        [user_id, settings]
+      );
+      return rows[0];
+    },
+    addAuditLog: async (_: any, args: any) => {
+      const { user_id, action_type, entity_type, entity_id, old_value, new_value } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO audit_logs (user_id, action_type, entity_type, entity_id, old_value, new_value) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [user_id, action_type, entity_type, entity_id, old_value, new_value]
       );
       return rows[0];
     },

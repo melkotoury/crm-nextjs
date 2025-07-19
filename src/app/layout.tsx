@@ -30,10 +30,13 @@ export default function RootLayout({
               <Link href="/workflow" className="text-gray-300 hover:text-white mr-4">Workflow</Link>
               <Link href="/communication" className="text-gray-300 hover:text-white mr-4">Communication</Link>
               <Link href="/customization" className="text-gray-300 hover:text-white mr-4">Customization</Link>
-              <Link href="/ai-ml" className="text-gray-300 hover:text-white">AI & ML</Link>
+              <Link href="/ai-ml" className="text-gray-300 hover:text-white mr-4">AI & ML</Link>
+              <Link href="/quotes-proposals" className="text-gray-300 hover:text-white">Quotes & Proposals</Link>
+              <Link href="/user-profiles" className="text-gray-300 hover:text-white">User Profiles</Link>
               <Link href="/collaboration" className="text-gray-300 hover:text-white">Collaboration</Link>
               <Link href="/roles-permissions" className="text-gray-300 hover:text-white">Roles & Permissions</Link>
-              <Link href="/integrations" className="text-gray-300 hover:text-white">Integrations</Link>
+              <Link href="/integrations" className="text-gray-300 hover:text-white mr-4">Integrations</Link>
+              <Link href="/user-profiles" className="text-gray-300 hover:text-white">User Profiles</Link>
             </div>
           </div>
         </nav>

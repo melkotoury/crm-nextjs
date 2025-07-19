@@ -283,13 +283,27 @@ CREATE TABLE IF NOT EXISTS documents (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: team_members
-CREATE TABLE IF NOT EXISTS team_members (
-    team_member_id SERIAL PRIMARY KEY,
+-- Table: user_profiles
+CREATE TABLE IF NOT EXISTS user_profiles (
+    profile_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) UNIQUE,
-    team_role VARCHAR(100),
+    bio TEXT,
+    profile_picture_url TEXT,
+    social_media_links JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: audit_logs
+CREATE TABLE IF NOT EXISTS audit_logs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    action_type VARCHAR(255) NOT NULL,
+    entity_type VARCHAR(255),
+    entity_id INT,
+    old_value JSONB,
+    new_value JSONB,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table: ai_models
@@ -310,6 +324,83 @@ CREATE TABLE IF NOT EXISTS predictions (
     entity_id INT NOT NULL,
     predicted_value TEXT,
     prediction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: quotes
+CREATE TABLE IF NOT EXISTS quotes (
+    quote_id SERIAL PRIMARY KEY,
+    deal_id INT REFERENCES deals(deal_id),
+    quote_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2),
+    status VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: proposals
+CREATE TABLE IF NOT EXISTS proposals (
+    proposal_id SERIAL PRIMARY KEY,
+    deal_id INT REFERENCES deals(deal_id),
+    proposal_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    content TEXT,
+    status VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: territories
+CREATE TABLE IF NOT EXISTS territories (
+    territory_id SERIAL PRIMARY KEY,
+    territory_name VARCHAR(255) NOT NULL UNIQUE,
+    region VARCHAR(255),
+    manager_user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: team_performance
+CREATE TABLE IF NOT EXISTS team_performance (
+    performance_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    metric_name VARCHAR(255) NOT NULL,
+    metric_value DECIMAL(10, 2),
+    record_date DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: customer_lifetime_value
+CREATE TABLE IF NOT EXISTS customer_lifetime_value (
+    clv_id SERIAL PRIMARY KEY,
+    contact_id INT REFERENCES contacts(contact_id) UNIQUE,
+    lifetime_value DECIMAL(10, 2),
+    calculation_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: churn_prediction
+CREATE TABLE IF NOT EXISTS churn_prediction (
+    churn_id SERIAL PRIMARY KEY,
+    contact_id INT REFERENCES contacts(contact_id) UNIQUE,
+    churn_probability DECIMAL(5, 4),
+    prediction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: cross_selling_opportunities
+CREATE TABLE IF NOT EXISTS cross_selling_opportunities (
+    opportunity_id SERIAL PRIMARY KEY,
+    contact_id INT REFERENCES contacts(contact_id),
+    product_service VARCHAR(255),
+    likelihood DECIMAL(5, 4),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: market_trends
+CREATE TABLE IF NOT EXISTS market_trends (
+    trend_id SERIAL PRIMARY KEY,
+    trend_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    trend_date DATE,
+    impact_score INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table: user_profiles
