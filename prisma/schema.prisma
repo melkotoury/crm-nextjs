@@ -1,0 +1,520 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  contact_id                 Int      @id @default(autoincrement())
+  first_name                 String   @db.VarChar(255)
+  last_name                  String   @db.VarChar(255)
+  email                      String   @unique @db.VarChar(255)
+  phone_number               String?  @db.VarChar(50)
+  company                    String?  @db.VarChar(255)
+  job_title                  String?  @db.VarChar(255)
+  created_at                 DateTime @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  deals                      Deal[]
+  interactions               Interaction[]
+  tickets                    Ticket[]
+  calls                      Call[]
+  meetings                   Meeting[]
+  customer_lifetime_value    CustomerLifetimeValue?
+  churn_prediction           ChurnPrediction?
+  cross_selling_opportunities CrossSellingOpportunity[]
+  opportunities              Opportunity[]
+}
+
+model User {
+  user_id                    Int      @id @default(autoincrement())
+  username                   String   @unique @db.VarChar(255)
+  password_hash              String   @db.VarChar(255)
+  email                      String   @unique @db.VarChar(255)
+  full_name                  String?  @db.VarChar(255)
+  role                       String   @default("user") @db.VarChar(50)
+  created_at                 DateTime @default(now()) @db.Timestamptz(6)
+  role_id                    Int?     @default(1)
+  user_setting               UserSetting?
+  audit_logs                 AuditLog[]
+  shared_calendars           SharedCalendar[]
+  documents                  Document[]
+  team_performance           TeamPerformance[]
+  data_imports               DataImport[]
+  data_exports               DataExport[]
+  deals                      Deal[]
+  tasks                      Task[]
+  interactions               Interaction[]
+  tickets                    Ticket[]
+  calls                      Call[]
+  meetings                   Meeting[]
+  territories                Territory[]
+  user_profile               UserProfile?
+  opportunities              Opportunity[]
+  Role                       Role?    @relation(fields: [role_id], references: [role_id])
+
+  @@map("users")
+}
+
+model Deal {
+  deal_id     Int       @id @default(autoincrement())
+  deal_name   String    @db.VarChar(255)
+  stage       String    @db.VarChar(100)
+  amount      Decimal?  @db.Decimal(10, 2)
+  close_date  DateTime? @db.Date
+  contact_id  Int?
+  user_id     Int?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  contact     Contact?  @relation(fields: [contact_id], references: [contact_id])
+  user        User?     @relation(fields: [user_id], references: [user_id])
+  tasks       Task[]
+  opportunities Opportunity[]
+  quotes      Quote[]
+  proposals   Proposal[]
+
+  @@map("deals")
+}
+
+model Task {
+  task_id     Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  description String?
+  due_date    DateTime? @db.Date
+  status      String    @default("pending") @db.VarChar(50)
+  user_id     Int?
+  deal_id     Int?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  user        User?     @relation(fields: [user_id], references: [user_id])
+  deal        Deal?     @relation(fields: [deal_id], references: [deal_id])
+
+  @@map("tasks")
+}
+
+model Interaction {
+  interaction_id Int      @id @default(autoincrement())
+  type           String   @db.VarChar(100)
+  notes          String?
+  interaction_date DateTime? @db.Timestamptz(6)
+  contact_id     Int?
+  user_id        Int?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  contact        Contact? @relation(fields: [contact_id], references: [contact_id])
+  user           User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("interactions")
+}
+
+model Lead {
+  lead_id    Int      @id @default(autoincrement())
+  first_name String   @db.VarChar(255)
+  last_name  String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255)
+  company    String?  @db.VarChar(255)
+  status     String   @db.VarChar(100)
+  source     String?  @db.VarChar(100)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("leads")
+}
+
+model Opportunity {
+  opportunity_id Int      @id @default(autoincrement())
+  opportunity_name String   @db.VarChar(255)
+  stage          String   @db.VarChar(100)
+  amount         Decimal? @db.Decimal(10, 2)
+  close_date     DateTime? @db.Date
+  contact_id     Int?
+  user_id        Int?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  contact        Contact? @relation(fields: [contact_id], references: [contact_id])
+  user           User?    @relation(fields: [user_id], references: [user_id])
+  deal_id        Int?
+  deal           Deal?    @relation(fields: [deal_id], references: [deal_id])
+
+  @@map("opportunities")
+}
+
+model Campaign {
+  campaign_id   Int      @id @default(autoincrement())
+  campaign_name String   @db.VarChar(255)
+  start_date    DateTime? @db.Date
+  end_date      DateTime? @db.Date
+  budget        Decimal? @db.Decimal(10, 2)
+  status        String?  @db.VarChar(100)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  emails        Email[]
+  social_posts  SocialPost[]
+
+  @@map("campaigns")
+}
+
+model Email {
+  email_id          Int      @id @default(autoincrement())
+  campaign_id       Int?
+  subject           String   @db.VarChar(255)
+  body              String?
+  sent_date         DateTime? @db.Timestamptz(6)
+  recipient_count   Int?
+  open_rate         Decimal? @db.Decimal(5, 2)
+  click_through_rate Decimal? @db.Decimal(5, 2)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  campaign          Campaign? @relation(fields: [campaign_id], references: [campaign_id])
+
+  @@map("emails")
+}
+
+model SocialPost {
+  post_id    Int      @id @default(autoincrement())
+  campaign_id Int?
+  platform   String   @db.VarChar(100)
+  content    String
+  post_date  DateTime? @db.Timestamptz(6)
+  likes      Int      @default(0)
+  shares     Int      @default(0)
+  comments   Int      @default(0)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  campaign   Campaign? @relation(fields: [campaign_id], references: [campaign_id])
+
+  @@map("social_posts")
+}
+
+model Ticket {
+  ticket_id   Int      @id @default(autoincrement())
+  subject     String   @db.VarChar(255)
+  description String?
+  status      String   @default("open") @db.VarChar(50)
+  priority    String   @default("medium") @db.VarChar(50)
+  contact_id  Int?
+  user_id     Int?
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  contact     Contact? @relation(fields: [contact_id], references: [contact_id])
+  user        User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("tickets")
+}
+
+model KnowledgeBaseArticle {
+  article_id Int      @id @default(autoincrement())
+  title      String   @db.VarChar(255)
+  content    String?
+  category   String?  @db.VarChar(100)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("knowledge_base_articles")
+}
+
+model Report {
+  report_id      Int      @id @default(autoincrement())
+  report_name    String   @db.VarChar(255)
+  report_type    String?  @db.VarChar(100)
+  generated_date DateTime @default(now()) @db.Timestamptz(6)
+  data           Json?
+
+  @@map("reports")
+}
+
+model Dashboard {
+  dashboard_id   Int      @id @default(autoincrement())
+  dashboard_name String   @db.VarChar(255)
+  layout         Json?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("dashboards")
+}
+
+model Workflow {
+  workflow_id   Int      @id @default(autoincrement())
+  workflow_name String   @db.VarChar(255)
+  trigger_event String?  @db.VarChar(255)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  workflow_steps WorkflowStep[]
+
+  @@map("workflows")
+}
+
+model WorkflowStep {
+  step_id        Int      @id @default(autoincrement())
+  workflow_id    Int?
+  step_order     Int
+  action_type    String   @db.VarChar(255)
+  action_details Json?
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  workflow       Workflow? @relation(fields: [workflow_id], references: [workflow_id])
+
+  @@map("workflow_steps")
+}
+
+model Call {
+  call_id         Int      @id @default(autoincrement())
+  contact_id      Int?
+  user_id         Int?
+  call_date       DateTime @db.Timestamptz(6)
+  duration_minutes Int?
+  notes           String?
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  contact         Contact? @relation(fields: [contact_id], references: [contact_id])
+  user            User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("calls")
+}
+
+model Meeting {
+  meeting_id   Int      @id @default(autoincrement())
+  title        String   @db.VarChar(255)
+  description  String?
+  meeting_date DateTime @db.Timestamptz(6)
+  location     String?  @db.VarChar(255)
+  contact_id   Int?
+  user_id      Int?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  contact      Contact? @relation(fields: [contact_id], references: [contact_id])
+  user         User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("meetings")
+}
+
+model Integration {
+  integration_id   Int      @id @default(autoincrement())
+  integration_name String   @db.VarChar(255)
+  api_key          String?  @db.VarChar(255)
+  status           String   @default("inactive") @db.VarChar(50)
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("integrations")
+}
+
+model Role {
+  role_id     Int      @id @default(autoincrement())
+  role_name   String   @unique @db.VarChar(255)
+  permissions RolePermission[]
+  users       User[]
+
+  @@map("roles")
+}
+
+model Permission {
+  permission_id   Int      @id @default(autoincrement())
+  permission_name String   @unique @db.VarChar(255)
+  roles           RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  role_id       Int
+  permission_id Int
+  role          Role      @relation(fields: [role_id], references: [role_id])
+  permission    Permission @relation(fields: [permission_id], references: [permission_id])
+
+  @@id([role_id, permission_id])
+  @@map("role_permissions")
+}
+
+model UserSetting {
+  user_id    Int      @id
+  settings   Json?
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user       User     @relation(fields: [user_id], references: [user_id])
+
+  @@map("user_settings")
+}
+
+model AuditLog {
+  log_id      Int      @id @default(autoincrement())
+  user_id     Int?
+  action_type String   @db.VarChar(255)
+  entity_type String?  @db.VarChar(255)
+  entity_id   Int?
+  old_value   Json?
+  new_value   Json?
+  timestamp   DateTime @default(now()) @db.Timestamptz(6)
+  user        User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("audit_logs")
+}
+
+model SharedCalendar {
+  calendar_id   Int      @id @default(autoincrement())
+  calendar_name String   @db.VarChar(255)
+  owner_user_id Int?
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user          User?    @relation(fields: [owner_user_id], references: [user_id])
+
+  @@map("shared_calendars")
+}
+
+model Document {
+  document_id   Int      @id @default(autoincrement())
+  document_name String   @db.VarChar(255)
+  document_url  String
+  owner_user_id Int?
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user          User?    @relation(fields: [owner_user_id], references: [user_id])
+
+  @@map("documents")
+}
+
+model Quote {
+  quote_id     Int      @id @default(autoincrement())
+  deal_id      Int?
+  quote_date   DateTime @default(now()) @db.Timestamptz(6)
+  total_amount Decimal? @db.Decimal(10, 2)
+  status       String?  @db.VarChar(100)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  deal         Deal?    @relation(fields: [deal_id], references: [deal_id])
+
+  @@map("quotes")
+}
+
+model Proposal {
+  proposal_id   Int      @id @default(autoincrement())
+  deal_id       Int?
+  proposal_date DateTime @default(now()) @db.Timestamptz(6)
+  content       String?
+  status        String?  @db.VarChar(100)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  deal          Deal?    @relation(fields: [deal_id], references: [deal_id])
+
+  @@map("proposals")
+}
+
+model Territory {
+  territory_id    Int      @id @default(autoincrement())
+  territory_name  String   @unique @db.VarChar(255)
+  region          String?  @db.VarChar(255)
+  manager_user_id Int?
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user            User?    @relation(fields: [manager_user_id], references: [user_id])
+
+  @@map("territories")
+}
+
+model TeamPerformance {
+  performance_id Int      @id @default(autoincrement())
+  user_id        Int?
+  metric_name    String   @db.VarChar(255)
+  metric_value   Decimal? @db.Decimal(10, 2)
+  record_date    DateTime? @db.Date
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  user           User?    @relation(fields: [user_id], references: [user_id])
+
+  @@map("team_performance")
+}
+
+model CustomerLifetimeValue {
+  clv_id          Int      @id @default(autoincrement())
+  contact_id      Int      @unique
+  lifetime_value  Decimal? @db.Decimal(10, 2)
+  calculation_date DateTime @default(now()) @db.Timestamptz(6)
+  contact         Contact  @relation(fields: [contact_id], references: [contact_id])
+
+  @@map("customer_lifetime_value")
+}
+
+model ChurnPrediction {
+  churn_id        Int      @id @default(autoincrement())
+  contact_id      Int      @unique
+  churn_probability Decimal? @db.Decimal(5, 4)
+  prediction_date DateTime @default(now()) @db.Timestamptz(6)
+  contact         Contact  @relation(fields: [contact_id], references: [contact_id])
+
+  @@map("churn_prediction")
+}
+
+model CrossSellingOpportunity {
+  opportunity_id Int      @id @default(autoincrement())
+  contact_id     Int?
+  product_service String?  @db.VarChar(255)
+  likelihood     Decimal? @db.Decimal(5, 4)
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  contact        Contact? @relation(fields: [contact_id], references: [contact_id])
+
+  @@map("cross_selling_opportunities")
+}
+
+model MarketTrend {
+  trend_id    Int      @id @default(autoincrement())
+  trend_name  String   @db.VarChar(255)
+  description String?
+  trend_date  DateTime? @db.Date
+  impact_score Int?
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("market_trends")
+}
+
+model UserProfile {
+  profile_id        Int      @id @default(autoincrement())
+  user_id           Int      @unique
+  bio               String?
+  profile_picture_url String?
+  social_media_links Json?
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user              User     @relation(fields: [user_id], references: [user_id])
+
+  @@map("user_profiles")
+}
+
+model DataImport {
+  import_id   Int      @id @default(autoincrement())
+  file_name   String   @db.VarChar(255)
+  file_type   String?  @db.VarChar(50)
+  status      String?  @db.VarChar(50)
+  imported_by Int?
+  imported_at DateTime @default(now()) @db.Timestamptz(6)
+  user        User?    @relation(fields: [imported_by], references: [user_id])
+
+  @@map("data_imports")
+}
+
+model DataExport {
+  export_id   Int      @id @default(autoincrement())
+  file_name   String   @db.VarChar(255)
+  file_type   String?  @db.VarChar(50)
+  status      String?  @db.VarChar(50)
+  exported_by Int?
+  exported_at DateTime @default(now()) @db.Timestamptz(6)
+  user        User?    @relation(fields: [exported_by], references: [user_id])
+
+  @@map("data_exports")
+}
+
+model AIModel {
+  model_id    Int      @id @default(autoincrement())
+  model_name  String   @db.VarChar(255)
+  model_type  String?  @db.VarChar(255)
+  description String?
+  predictions Prediction[]
+
+  @@map("ai_models")
+}
+
+model Prediction {
+  prediction_id   Int      @id @default(autoincrement())
+  model_id        Int?
+  entity_type     String   @db.VarChar(255)
+  entity_id       Int
+  predicted_value String?
+  prediction_date DateTime @default(now()) @db.Timestamptz(6)
+  ai_model        AIModel? @relation(fields: [model_id], references: [model_id])
+
+  @@map("predictions")
+}
