@@ -244,3 +244,22 @@ CREATE TABLE IF NOT EXISTS role_permissions (
 -- Alter Table: users to add role_id
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS role_id INT REFERENCES roles(role_id) DEFAULT 1;
+
+-- Table: user_settings
+CREATE TABLE IF NOT EXISTS user_settings (
+    user_id INT PRIMARY KEY REFERENCES users(user_id),
+    settings JSONB,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: audit_logs
+CREATE TABLE IF NOT EXISTS audit_logs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    action_type VARCHAR(255) NOT NULL,
+    entity_type VARCHAR(255),
+    entity_id INT,
+    old_value JSONB,
+    new_value JSONB,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
