@@ -22,9 +22,9 @@ export const typeDefs = gql`
     source: String
   }
 
-  type Opportunity {
-    opportunity_id: ID!
-    opportunity_name: String!
+  type Deal {
+    deal_id: ID!
+    deal_name: String!
     stage: String!
     amount: Float
     close_date: String
@@ -36,7 +36,7 @@ export const typeDefs = gql`
     hello: String
     contacts: [Contact]
     leads: [Lead]
-    opportunities: [Opportunity]
+    deals: [Deal]
   }
 
   type Mutation {
@@ -56,14 +56,14 @@ export const typeDefs = gql`
       status: String!
       source: String
     ): Lead
-    addOpportunity(
-      opportunity_name: String!
+    addDeal(
+      deal_name: String!
       stage: String!
       amount: Float
       close_date: String
       contact_id: ID
       user_id: ID
-    ): Opportunity
+    ): Deal
   }
 `;
 
@@ -100,11 +100,11 @@ export const resolvers = {
       );
       return rows[0];
     },
-    addOpportunity: async (_: any, args: any) => {
-      const { opportunity_name, stage, amount, close_date, contact_id, user_id } = args;
+    addDeal: async (_: any, args: any) => {
+      const { deal_name, stage, amount, close_date, contact_id, user_id } = args;
       const { rows } = await pool.query(
-        'INSERT INTO opportunities (opportunity_name, stage, amount, close_date, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [opportunity_name, stage, amount, close_date, contact_id, user_id]
+        'INSERT INTO deals (deal_name, stage, amount, close_date, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [deal_name, stage, amount, close_date, contact_id, user_id]
       );
       return rows[0];
     },
