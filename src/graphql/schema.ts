@@ -135,6 +135,350 @@ export const typeDefs = gql`
     status: String
   }
 
+  type Role {
+    role_id: ID!
+    role_name: String!
+  }
+
+  type Permission {
+    permission_id: ID!
+    permission_name: String!
+  }
+
+  type Query {
+    hello: String
+    contacts: [Contact]
+    leads: [Lead]
+    deals: [Deal]
+    campaigns: [Campaign]
+    emails: [Email]
+    socialPosts: [SocialPost]
+    tickets: [Ticket]
+    knowledgeBaseArticles: [KnowledgeBaseArticle]
+    reports: [Report]
+    dashboards: [Dashboard]
+    workflows: [Workflow]
+    workflowSteps: [WorkflowStep]
+    calls: [Call]
+    meetings: [Meeting]
+    integrations: [Integration]
+    roles: [Role]
+    permissions: [Permission]
+  }
+
+  type Mutation {
+    addContact(
+      first_name: String!
+      last_name: String!
+      email: String!
+      phone_number: String
+      company: String
+      job_title: String
+    ): Contact
+    addLead(
+      first_name: String!
+      last_name: String!
+      email: String!
+      company: String
+      status: String!
+      source: String
+    ): Lead
+    addDeal(
+      deal_name: String!
+      stage: String!
+      amount: Float
+      close_date: String
+      contact_id: ID
+      user_id: ID
+    ): Deal
+    addCampaign(
+      campaign_name: String!
+      start_date: String
+      end_date: String
+      budget: Float
+      status: String
+    ): Campaign
+    addEmail(
+      campaign_id: ID
+      subject: String!
+      body: String
+      sent_date: String
+      recipient_count: Int
+      open_rate: Float
+      click_through_rate: Float
+    ): Email
+    addSocialPost(
+      campaign_id: ID
+      platform: String!
+      content: String!
+      post_date: String
+      likes: Int
+      shares: Int
+      comments: Int
+    ): SocialPost
+    addTicket(
+      subject: String!
+      description: String
+      status: String
+      priority: String
+      contact_id: ID
+      user_id: ID
+    ): Ticket
+    addKnowledgeBaseArticle(
+      title: String!
+      content: String
+      category: String
+    ): KnowledgeBaseArticle
+    addReport(
+      report_name: String!
+      report_type: String
+      generated_date: String
+      data: String
+    ): Report
+    addDashboard(
+      dashboard_name: String!
+      layout: String
+    ): Dashboard
+    addWorkflow(
+      workflow_name: String!
+      trigger_event: String
+      is_active: Boolean
+    ): Workflow
+    addWorkflowStep(
+      workflow_id: ID!
+      step_order: Int!
+      action_type: String!
+      action_details: String
+    ): WorkflowStep
+    addCall(
+      contact_id: ID
+      user_id: ID
+      call_date: String!
+      duration_minutes: Int
+      notes: String
+    ): Call
+    addMeeting(
+      title: String!
+      description: String
+      meeting_date: String!
+      location: String
+      contact_id: ID
+      user_id: ID
+    ): Meeting
+    addIntegration(
+      integration_name: String!
+      api_key: String
+      status: String
+    ): Integration
+    addRole(
+      role_name: String!
+    ): Role
+    addPermission(
+      permission_name: String!
+    ): Permission
+    addRolePermission(
+      role_id: ID!
+      permission_id: ID!
+    ): Boolean
+  }
+`;
+
+export const resolvers = {
+  Query: {
+    hello: () => 'Hello, world!',
+    contacts: async () => {
+      const { rows } = await pool.query('SELECT * FROM contacts');
+      return rows;
+    },
+    leads: async () => {
+      const { rows } = await pool.query('SELECT * FROM leads');
+      return rows;
+    },
+    deals: async () => {
+      const { rows } = await pool.query('SELECT * FROM deals');
+      return rows;
+    },
+    campaigns: async () => {
+      const { rows } = await pool.query('SELECT * FROM campaigns');
+      return rows;
+    },
+    emails: async () => {
+      const { rows } = await pool.query('SELECT * FROM emails');
+      return rows;
+    },
+    socialPosts: async () => {
+      const { rows } = await pool.query('SELECT * FROM social_posts');
+      return rows;
+    },
+    tickets: async () => {
+      const { rows } = await pool.query('SELECT * FROM tickets');
+      return rows;
+    },
+    knowledgeBaseArticles: async () => {
+      const { rows } = await pool.query('SELECT * FROM knowledge_base_articles');
+      return rows;
+    },
+    reports: async () => {
+      const { rows } = await pool.query('SELECT * FROM reports');
+      return rows;
+    },
+    dashboards: async () => {
+      const { rows } = await pool.query('SELECT * FROM dashboards');
+      return rows;
+    },
+    workflows: async () => {
+      const { rows } = await pool.query('SELECT * FROM workflows');
+      return rows;
+    },
+    workflowSteps: async () => {
+      const { rows } = await pool.query('SELECT * FROM workflow_steps');
+      return rows;
+    },
+    calls: async () => {
+      const { rows } = await pool.query('SELECT * FROM calls');
+      return rows;
+    },
+    meetings: async () => {
+      const { rows } = await pool.query('SELECT * FROM meetings');
+      return rows;
+    },
+    integrations: async () => {
+      const { rows } = await pool.query('SELECT * FROM integrations');
+      return rows;
+    },
+    roles: async () => {
+      const { rows } = await pool.query('SELECT * FROM roles');
+      return rows;
+    },
+    permissions: async () => {
+      const { rows } = await pool.query('SELECT * FROM permissions');
+      return rows;
+    },
+  },
+  Mutation: {
+    addContact: async (_: any, args: any) => {
+      const { first_name, last_name, email, phone_number, company, job_title } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO contacts (first_name, last_name, email, phone_number, company, job_title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [first_name, last_name, email, phone_number, company, job_title]
+      );
+      return rows[0];
+    },
+    addLead: async (_: any, args: any) => {
+      const { first_name, last_name, email, company, status, source } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO leads (first_name, last_name, email, company, status, source) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [first_name, last_name, email, company, status, source]
+      );
+      return rows[0];
+    },
+    addDeal: async (_: any, args: any) => {
+      const { deal_name, stage, amount, close_date, contact_id, user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO deals (deal_name, stage, amount, close_date, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [deal_name, stage, amount, close_date, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addCampaign: async (_: any, args: any) => {
+      const { campaign_name, start_date, end_date, budget, status } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO campaigns (campaign_name, start_date, end_date, budget, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [campaign_name, start_date, end_date, budget, status]
+      );
+      return rows[0];
+    },
+    addEmail: async (_: any, args: any) => {
+      const { campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO emails (campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [campaign_id, subject, body, sent_date, recipient_count, open_rate, click_through_rate]
+      );
+      return rows[0];
+    },
+    addSocialPost: async (_: any, args: any) => {
+      const { campaign_id, platform, content, post_date, likes, shares, comments } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO social_posts (campaign_id, platform, content, post_date, likes, shares, comments) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [campaign_id, platform, content, post_date, likes, shares, comments]
+      );
+      return rows[0];
+    },
+    addTicket: async (_: any, args: any) => {
+      const { subject, description, status, priority, contact_id, user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO tickets (subject, description, status, priority, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [subject, description, status, priority, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addKnowledgeBaseArticle: async (_: any, args: any) => {
+      const { title, content, category } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO knowledge_base_articles (title, content, category) VALUES ($1, $2, $3) RETURNING *',
+        [title, content, category]
+      );
+      return rows[0];
+    },
+    addReport: async (_: any, args: any) => {
+      const { report_name, report_type, generated_date, data } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO reports (report_name, report_type, generated_date, data) VALUES ($1, $2, $3, $4) RETURNING *',
+        [report_name, report_type, generated_date, data]
+      );
+      return rows[0];
+    },
+    addDashboard: async (_: any, args: any) => {
+      const { dashboard_name, layout } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO dashboards (dashboard_name, layout) VALUES ($1, $2) RETURNING *',
+        [dashboard_name, layout]
+      );
+      return rows[0];
+    },
+    addWorkflow: async (_: any, args: any) => {
+      const { workflow_name, trigger_event, is_active } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO workflows (workflow_name, trigger_event, is_active) VALUES ($1, $2, $3) RETURNING *',
+        [workflow_name, trigger_event, is_active]
+      );
+      return rows[0];
+    },
+    addWorkflowStep: async (_: any, args: any) => {
+      const { workflow_id, step_order, action_type, action_details } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO workflow_steps (workflow_id, step_order, action_type, action_details) VALUES ($1, $2, $3, $4) RETURNING *',
+        [workflow_id, step_order, action_type, action_details]
+      );
+      return rows[0];
+    },
+    addCall: async (_: any, args: any) => {
+      const { contact_id, user_id, call_date, duration_minutes, notes } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO calls (contact_id, user_id, call_date, duration_minutes, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [contact_id, user_id, call_date, duration_minutes, notes]
+      );
+      return rows[0];
+    },
+    addMeeting: async (_: any, args: any) => {
+      const { title, description, meeting_date, location, contact_id, user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO meetings (title, description, meeting_date, location, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [title, description, meeting_date, location, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addIntegration: async (_: any, args: any) => {
+      const { integration_name, api_key, status } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO integrations (integration_name, api_key, status) VALUES ($1, $2, $3) RETURNING *',
+        [integration_name, api_key, status]
+      );
+      return rows[0];
+    },
+  },
+};
+
   type Query {
     hello: String
     contacts: [Contact]

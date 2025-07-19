@@ -221,3 +221,26 @@ CREATE TABLE IF NOT EXISTS integrations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: roles
+CREATE TABLE IF NOT EXISTS roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Table: permissions
+CREATE TABLE IF NOT EXISTS permissions (
+    permission_id SERIAL PRIMARY KEY,
+    permission_name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Junction Table: role_permissions
+CREATE TABLE IF NOT EXISTS role_permissions (
+    role_id INT REFERENCES roles(role_id),
+    permission_id INT REFERENCES permissions(permission_id),
+    PRIMARY KEY (role_id, permission_id)
+);
+
+-- Alter Table: users to add role_id
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS role_id INT REFERENCES roles(role_id) DEFAULT 1;
