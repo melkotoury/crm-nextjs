@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Lead {
   lead_id: string;
@@ -23,6 +24,7 @@ export default function LeadsPage() {
     source: '',
   });
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchLeads();
@@ -87,7 +89,11 @@ export default function LeadsPage() {
               }
             }
           `,
-          variables: { lead_id: editingLead.lead_id, ...formData },
+          variables: {
+            lead_id: editingLead.lead_id,
+            ...formData,
+            amount: formData.amount ? parseFloat(formData.amount) : null,
+          },
         }),
       });
       const result = await response.json();
@@ -185,15 +191,15 @@ export default function LeadsPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Lead Management</h1>
+      <h1 className="text-2xl font-bold mb-4">{t('leads')}</h1>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">{editingLead ? 'Edit Lead' : 'Add New Lead'}</h2>
+        <h2 className="text-xl font-semibold mb-2">{editingLead ? t('edit_lead') : t('add_new_lead')}</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
             name="first_name"
-            placeholder="First Name"
+            placeholder={t('first_name')}
             value={formData.first_name}
             onChange={handleInputChange}
             required
@@ -202,7 +208,7 @@ export default function LeadsPage() {
           <input
             type="text"
             name="last_name"
-            placeholder="Last Name"
+            placeholder={t('last_name')}
             value={formData.last_name}
             onChange={handleInputChange}
             required
@@ -211,7 +217,7 @@ export default function LeadsPage() {
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder={t('email')}
             value={formData.email}
             onChange={handleInputChange}
             required
@@ -220,7 +226,7 @@ export default function LeadsPage() {
           <input
             type="text"
             name="company"
-            placeholder="Company"
+            placeholder={t('company')}
             value={formData.company}
             onChange={handleInputChange}
             className="p-2 border rounded"
@@ -232,21 +238,21 @@ export default function LeadsPage() {
             required
             className="p-2 border rounded"
           >
-            <option value="New">New</option>
-            <option value="Contacted">Contacted</option>
-            <option value="Qualified">Qualified</option>
-            <option value="Disqualified">Disqualified</option>
+            <option value="New">{t('status_new')}</option>
+            <option value="Contacted">{t('status_contacted')}</option>
+            <option value="Qualified">{t('status_qualified')}</option>
+            <option value="Disqualified">{t('status_disqualified')}</option>
           </select>
           <input
             type="text"
             name="source"
-            placeholder="Source"
+            placeholder={t('source')}
             value={formData.source}
             onChange={handleInputChange}
             className="p-2 border rounded"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded col-span-full">
-            {editingLead ? 'Update Lead' : 'Add Lead'}
+            {editingLead ? t('update_lead') : t('add_lead')}
           </button>
           {editingLead && (
             <button
@@ -264,16 +270,16 @@ export default function LeadsPage() {
               }}
               className="bg-gray-500 text-white p-2 rounded col-span-full mt-2"
             >
-              Cancel Edit
+              {t('cancel_edit')}
             </button>
           )}
         </form>
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-2">Existing Leads</h2>
+        <h2 className="text-xl font-semibold mb-2">{t('existing_leads')}</h2>
         {leads.length === 0 ? (
-          <p>No leads found.</p>
+          <p>{t('no_leads_found')}</p>
         ) : (
           <ul className="space-y-2">
             {leads.map((lead) => (
@@ -282,21 +288,21 @@ export default function LeadsPage() {
                   <p className="font-medium">{lead.first_name} {lead.last_name}</p>
                   <p className="text-sm text-gray-600">{lead.email}</p>
                   {lead.company && <p className="text-sm text-gray-600">{lead.company}</p>}
-                  <p className="text-sm text-gray-600">Status: {lead.status}</p>
-                  {lead.source && <p className="text-sm text-gray-600">Source: {lead.source}</p>}
+                  <p className="text-sm text-gray-600">{t('status')}: {lead.status}</p>
+                  {lead.source && <p className="text-sm text-gray-600">{t('source')}: {lead.source}</p>}
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEditClick(lead)}
                     className="bg-yellow-500 text-white p-2 rounded text-sm"
                   >
-                    Edit
+                    {t('edit')}
                   </button>
                   <button
                     onClick={() => handleDeleteLead(lead.lead_id)}
                     className="bg-red-500 text-white p-2 rounded text-sm"
                   >
-                    Delete
+                    {t('delete')}
                   </button>
                 </div>
               </li>

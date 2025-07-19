@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Contact {
   contact_id: string;
@@ -23,6 +24,7 @@ export default function ContactsPage() {
     job_title: '',
   });
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchContacts();
@@ -185,15 +187,15 @@ export default function ContactsPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Contact Management</h1>
+      <h1 className="text-2xl font-bold mb-4">{t('contacts')}</h1>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">{editingContact ? 'Edit Contact' : 'Add New Contact'}</h2>
+        <h2 className="text-xl font-semibold mb-2">{editingContact ? t('edit_contact') : t('add_new_contact')}</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
             name="first_name"
-            placeholder="First Name"
+            placeholder={t('first_name')}
             value={formData.first_name}
             onChange={handleInputChange}
             required
@@ -202,7 +204,7 @@ export default function ContactsPage() {
           <input
             type="text"
             name="last_name"
-            placeholder="Last Name"
+            placeholder={t('last_name')}
             value={formData.last_name}
             onChange={handleInputChange}
             required
@@ -211,7 +213,7 @@ export default function ContactsPage() {
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder={t('email')}
             value={formData.email}
             onChange={handleInputChange}
             required
@@ -220,7 +222,7 @@ export default function ContactsPage() {
           <input
             type="text"
             name="phone_number"
-            placeholder="Phone Number"
+            placeholder={t('phone_number')}
             value={formData.phone_number}
             onChange={handleInputChange}
             className="p-2 border rounded"
@@ -228,7 +230,7 @@ export default function ContactsPage() {
           <input
             type="text"
             name="company"
-            placeholder="Company"
+            placeholder={t('company')}
             value={formData.company}
             onChange={handleInputChange}
             className="p-2 border rounded"
@@ -236,13 +238,13 @@ export default function ContactsPage() {
           <input
             type="text"
             name="job_title"
-            placeholder="Job Title"
+            placeholder={t('job_title')}
             value={formData.job_title}
             onChange={handleInputChange}
             className="p-2 border rounded"
           />
           <button type="submit" className="bg-blue-500 text-white p-2 rounded col-span-full">
-            {editingContact ? 'Update Contact' : 'Add Contact'}
+            {editingContact ? t('update_contact') : t('add_contact')}
           </button>
           {editingContact && (
             <button
@@ -260,16 +262,16 @@ export default function ContactsPage() {
               }}
               className="bg-gray-500 text-white p-2 rounded col-span-full mt-2"
             >
-              Cancel Edit
+              {t('cancel_edit')}
             </button>
           )}
         </form>
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-2">Existing Contacts</h2>
+        <h2 className="text-xl font-semibold mb-2">{t('existing_contacts')}</h2>
         {contacts.length === 0 ? (
-          <p>No contacts found.</p>
+          <p>{t('no_contacts_found')}</p>
         ) : (
           <ul className="space-y-2">
             {contacts.map((contact) => (
@@ -286,13 +288,13 @@ export default function ContactsPage() {
                     onClick={() => handleEditClick(contact)}
                     className="bg-yellow-500 text-white p-2 rounded text-sm"
                   >
-                    Edit
+                    {t('edit')}
                   </button>
                   <button
                     onClick={() => handleDeleteContact(contact.contact_id)}
                     className="bg-red-500 text-white p-2 rounded text-sm"
                   >
-                    Delete
+                    {t('delete')}
                   </button>
                 </div>
               </li>
