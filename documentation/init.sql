@@ -211,3 +211,13 @@ CREATE TABLE IF NOT EXISTS meetings (
     user_id INT REFERENCES users(user_id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: integrations
+CREATE TABLE IF NOT EXISTS integrations (
+    integration_id SERIAL PRIMARY KEY,
+    integration_name VARCHAR(255) NOT NULL,
+    api_key VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'inactive',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

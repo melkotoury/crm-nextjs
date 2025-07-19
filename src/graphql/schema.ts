@@ -128,6 +128,13 @@ export const typeDefs = gql`
     user_id: ID
   }
 
+  type Integration {
+    integration_id: ID!
+    integration_name: String!
+    api_key: String
+    status: String
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -144,6 +151,7 @@ export const typeDefs = gql`
     workflowSteps: [WorkflowStep]
     calls: [Call]
     meetings: [Meeting]
+    integrations: [Integration]
   }
 
   type Mutation {
@@ -245,6 +253,11 @@ export const typeDefs = gql`
       contact_id: ID
       user_id: ID
     ): Meeting
+    addIntegration(
+      integration_name: String!
+      api_key: String
+      status: String
+    ): Integration
   }
 `;
 
@@ -305,6 +318,10 @@ export const resolvers = {
     },
     meetings: async () => {
       const { rows } = await pool.query('SELECT * FROM meetings');
+      return rows;
+    },
+    integrations: async () => {
+      const { rows } = await pool.query('SELECT * FROM integrations');
       return rows;
     },
   },
@@ -418,6 +435,14 @@ export const resolvers = {
       const { rows } = await pool.query(
         'INSERT INTO meetings (title, description, meeting_date, location, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
         [title, description, meeting_date, location, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addIntegration: async (_: any, args: any) => {
+      const { integration_name, api_key, status } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO integrations (integration_name, api_key, status) VALUES ($1, $2, $3) RETURNING *',
+        [integration_name, api_key, status]
       );
       return rows[0];
     },
