@@ -150,3 +150,21 @@ CREATE TABLE IF NOT EXISTS knowledge_base_articles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: reports
+CREATE TABLE IF NOT EXISTS reports (
+    report_id SERIAL PRIMARY KEY,
+    report_name VARCHAR(255) NOT NULL,
+    report_type VARCHAR(100),
+    generated_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    data JSONB
+);
+
+-- Table: dashboards
+CREATE TABLE IF NOT EXISTS dashboards (
+    dashboard_id SERIAL PRIMARY KEY,
+    dashboard_name VARCHAR(255) NOT NULL,
+    layout JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

@@ -63,6 +63,37 @@ export const typeDefs = gql`
     comments: Int
   }
 
+  type Ticket {
+    ticket_id: ID!
+    subject: String!
+    description: String
+    status: String
+    priority: String
+    contact_id: ID
+    user_id: ID
+  }
+
+  type KnowledgeBaseArticle {
+    article_id: ID!
+    title: String!
+    content: String
+    category: String
+  }
+
+  type Report {
+    report_id: ID!
+    report_name: String!
+    report_type: String
+    generated_date: String
+    data: String
+  }
+
+  type Dashboard {
+    dashboard_id: ID!
+    dashboard_name: String!
+    layout: String
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -71,6 +102,10 @@ export const typeDefs = gql`
     campaigns: [Campaign]
     emails: [Email]
     socialPosts: [SocialPost]
+    tickets: [Ticket]
+    knowledgeBaseArticles: [KnowledgeBaseArticle]
+    reports: [Report]
+    dashboards: [Dashboard]
   }
 
   type Mutation {
@@ -123,6 +158,29 @@ export const typeDefs = gql`
       shares: Int
       comments: Int
     ): SocialPost
+    addTicket(
+      subject: String!
+      description: String
+      status: String
+      priority: String
+      contact_id: ID
+      user_id: ID
+    ): Ticket
+    addKnowledgeBaseArticle(
+      title: String!
+      content: String
+      category: String
+    ): KnowledgeBaseArticle
+    addReport(
+      report_name: String!
+      report_type: String
+      generated_date: String
+      data: String
+    ): Report
+    addDashboard(
+      dashboard_name: String!
+      layout: String
+    ): Dashboard
   }
 `;
 
@@ -151,6 +209,22 @@ export const resolvers = {
     },
     socialPosts: async () => {
       const { rows } = await pool.query('SELECT * FROM social_posts');
+      return rows;
+    },
+    tickets: async () => {
+      const { rows } = await pool.query('SELECT * FROM tickets');
+      return rows;
+    },
+    knowledgeBaseArticles: async () => {
+      const { rows } = await pool.query('SELECT * FROM knowledge_base_articles');
+      return rows;
+    },
+    reports: async () => {
+      const { rows } = await pool.query('SELECT * FROM reports');
+      return rows;
+    },
+    dashboards: async () => {
+      const { rows } = await pool.query('SELECT * FROM dashboards');
       return rows;
     },
   },
@@ -200,6 +274,38 @@ export const resolvers = {
       const { rows } = await pool.query(
         'INSERT INTO social_posts (campaign_id, platform, content, post_date, likes, shares, comments) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
         [campaign_id, platform, content, post_date, likes, shares, comments]
+      );
+      return rows[0];
+    },
+    addTicket: async (_: any, args: any) => {
+      const { subject, description, status, priority, contact_id, user_id } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO tickets (subject, description, status, priority, contact_id, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [subject, description, status, priority, contact_id, user_id]
+      );
+      return rows[0];
+    },
+    addKnowledgeBaseArticle: async (_: any, args: any) => {
+      const { title, content, category } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO knowledge_base_articles (title, content, category) VALUES ($1, $2, $3) RETURNING *',
+        [title, content, category]
+      );
+      return rows[0];
+    },
+    addReport: async (_: any, args: any) => {
+      const { report_name, report_type, generated_date, data } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO reports (report_name, report_type, generated_date, data) VALUES ($1, $2, $3, $4) RETURNING *',
+        [report_name, report_type, generated_date, data]
+      );
+      return rows[0];
+    },
+    addDashboard: async (_: any, args: any) => {
+      const { dashboard_name, layout } = args;
+      const { rows } = await pool.query(
+        'INSERT INTO dashboards (dashboard_name, layout) VALUES ($1, $2) RETURNING *',
+        [dashboard_name, layout]
       );
       return rows[0];
     },
