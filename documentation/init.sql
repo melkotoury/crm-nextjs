@@ -168,3 +168,23 @@ CREATE TABLE IF NOT EXISTS dashboards (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: workflows
+CREATE TABLE IF NOT EXISTS workflows (
+    workflow_id SERIAL PRIMARY KEY,
+    workflow_name VARCHAR(255) NOT NULL,
+    trigger_event VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: workflow_steps
+CREATE TABLE IF NOT EXISTS workflow_steps (
+    step_id SERIAL PRIMARY KEY,
+    workflow_id INT REFERENCES workflows(workflow_id),
+    step_order INT NOT NULL,
+    action_type VARCHAR(255) NOT NULL,
+    action_details JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

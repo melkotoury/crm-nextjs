@@ -177,10 +177,163 @@ export const typeDefs = gql`
       generated_date: String
       data: String
     ): Report
+    type SocialPost {
+    post_id: ID!
+    campaign_id: ID
+    platform: String!
+    content: String!
+    post_date: String
+    likes: Int
+    shares: Int
+    comments: Int
+  }
+
+  type Ticket {
+    ticket_id: ID!
+    subject: String!
+    description: String
+    status: String
+    priority: String
+    contact_id: ID
+    user_id: ID
+  }
+
+  type KnowledgeBaseArticle {
+    article_id: ID!
+    title: String!
+    content: String
+    category: String
+  }
+
+  type Report {
+    report_id: ID!
+    report_name: String!
+    report_type: String
+    generated_date: String
+    data: String
+  }
+
+  type Dashboard {
+    dashboard_id: ID!
+    dashboard_name: String!
+    layout: String
+  }
+
+  type Workflow {
+    workflow_id: ID!
+    workflow_name: String!
+    trigger_event: String
+    is_active: Boolean
+  }
+
+  type WorkflowStep {
+    step_id: ID!
+    workflow_id: ID!
+    step_order: Int!
+    action_type: String!
+    action_details: String
+  }
+
+  type Query {
+    hello: String
+    contacts: [Contact]
+    leads: [Lead]
+    deals: [Deal]
+    campaigns: [Campaign]
+    emails: [Email]
+    socialPosts: [SocialPost]
+    tickets: [Ticket]
+    knowledgeBaseArticles: [KnowledgeBaseArticle]
+    reports: [Report]
+    dashboards: [Dashboard]
+    workflows: [Workflow]
+    workflowSteps: [WorkflowStep]
+  }
+
+  type Mutation {
+    addContact(
+      first_name: String!
+      last_name: String!
+      email: String!
+      phone_number: String
+      company: String
+      job_title: String
+    ): Contact
+    addLead(
+      first_name: String!
+      last_name: String!
+      email: String!
+      company: String
+      status: String!
+      source: String
+    ): Lead
+    addDeal(
+      deal_name: String!
+      stage: String!
+      amount: Float
+      close_date: String
+      contact_id: ID
+      user_id: ID
+    ): Deal
+    addCampaign(
+      campaign_name: String!
+      start_date: String
+      end_date: String
+      budget: Float
+      status: String
+    ): Campaign
+    addEmail(
+      campaign_id: ID
+      subject: String!
+      body: String
+      sent_date: String
+      recipient_count: Int
+      open_rate: Float
+      click_through_rate: Float
+    ): Email
+    addSocialPost(
+      campaign_id: ID
+      platform: String!
+      content: String!
+      post_date: String
+      likes: Int
+      shares: Int
+      comments: Int
+    ): SocialPost
+    addTicket(
+      subject: String!
+      description: String
+      status: String
+      priority: String
+      contact_id: ID
+      user_id: ID
+    ): Ticket
+    addKnowledgeBaseArticle(
+      title: String!
+      content: String
+      category: String
+    ): KnowledgeBaseArticle
+    addReport(
+      report_name: String!
+      report_type: String
+      generated_date: String
+      data: String
+    ): Report
     addDashboard(
       dashboard_name: String!
       layout: String
     ): Dashboard
+    addWorkflow(
+      workflow_name: String!
+      trigger_event: String
+      is_active: Boolean
+    ): Workflow
+    addWorkflowStep(
+      workflow_id: ID!
+      step_order: Int!
+      action_type: String!
+      action_details: String
+    ): WorkflowStep
   }
 `;
 
@@ -225,6 +378,14 @@ export const resolvers = {
     },
     dashboards: async () => {
       const { rows } = await pool.query('SELECT * FROM dashboards');
+      return rows;
+    },
+    workflows: async () => {
+      const { rows } = await pool.query('SELECT * FROM workflows');
+      return rows;
+    },
+    workflowSteps: async () => {
+      const { rows } = await pool.query('SELECT * FROM workflow_steps');
       return rows;
     },
   },
