@@ -164,6 +164,22 @@ export const typeDefs = gql`
     team_role: String
   }
 
+  type AIModel {
+    model_id: ID!
+    model_name: String!
+    model_type: String
+    description: String
+  }
+
+  type Prediction {
+    prediction_id: ID!
+    model_id: ID
+    entity_type: String!
+    entity_id: ID!
+    predicted_value: String
+    prediction_date: String
+  }
+
   type Query {
     hello: String
     contacts: [Contact]
@@ -186,6 +202,8 @@ export const typeDefs = gql`
     sharedCalendars: [SharedCalendar]
     documents: [Document]
     teamMembers: [TeamMember]
+    aiModels: [AIModel]
+    predictions: [Prediction]
   }
 
   type Mutation {
@@ -315,6 +333,17 @@ export const typeDefs = gql`
       user_id: ID!
       team_role: String
     ): TeamMember
+    addAIModel(
+      model_name: String!
+      model_type: String
+      description: String
+    ): AIModel
+    addPrediction(
+      model_id: ID
+      entity_type: String!
+      entity_id: ID!
+      predicted_value: String
+    ): Prediction
   }
 `;
 

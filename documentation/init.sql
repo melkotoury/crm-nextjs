@@ -291,3 +291,34 @@ CREATE TABLE IF NOT EXISTS team_members (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Table: ai_models
+CREATE TABLE IF NOT EXISTS ai_models (
+    model_id SERIAL PRIMARY KEY,
+    model_name VARCHAR(255) NOT NULL,
+    model_type VARCHAR(100),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: predictions
+CREATE TABLE IF NOT EXISTS predictions (
+    prediction_id SERIAL PRIMARY KEY,
+    model_id INT REFERENCES ai_models(model_id),
+    entity_type VARCHAR(255) NOT NULL,
+    entity_id INT NOT NULL,
+    predicted_value TEXT,
+    prediction_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: user_profiles
+CREATE TABLE IF NOT EXISTS user_profiles (
+    profile_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) UNIQUE,
+    bio TEXT,
+    profile_picture_url TEXT,
+    social_media_links JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
